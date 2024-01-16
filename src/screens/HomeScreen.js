@@ -2,22 +2,31 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Import Picker component
 import pLogo from '../../assets/logo1.png'
-import car from '../../assets/car1.png'
-import bike from '../../assets/bike1.png'
+import car from '../../assets/Car.jpg'
+import bike from '../../assets/Bike.png'
+
+
 
 export default function HomeScreen({ navigation }) {
     const [searchText, setSearchText] = useState('');
-    const [selectedVehicleType, setSelectedVehicleType] = useState('Car');
+    const [selectedVehicleType, setSelectedVehicleType] = useState(null);
 
     const handleSearchSubmit = () => {
         const vehicleDetails = {
-            vehicleName: selectedVehicleType,
+            vehicleNumber: searchText,
             model: 'XYZ',
             year: '2022',
-            vehicleType: selectedVehicleType,
+            vehicleType: selectedVehicleType,  // Use the selectedVehicleType value
         };
+    
+    //    const data = (JSON.stringify(vehicleDetails, null, 2)); 
 
-        navigation.navigate('VehicleDetails', vehicleDetails);
+        navigation.navigate('VehicleDetails', {...vehicleDetails})
+    };
+
+    const handleImageClick = (vehicleType) => {
+        setSelectedVehicleType(vehicleType);
+        handleSearchSubmit();  // Optionally, you can call handleSearchSubmit here if needed
     };
 
     return (
@@ -31,13 +40,13 @@ export default function HomeScreen({ navigation }) {
             />
 
             <View style={styles.imageContainer}>
-                <TouchableWithoutFeedback onPress={() => setSelectedVehicleType('Car')}>
+                <TouchableWithoutFeedback onPress={() => handleImageClick('Car')}>
                     <Image
                         source={car} // Update path accordingly
                         style={[styles.vehicleImage, selectedVehicleType === 'Car' && styles.selectedImage]}
                     />
                 </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => setSelectedVehicleType('Bike')}>
+                <TouchableWithoutFeedback onPress={() => handleImageClick('Bike')}>
                     <Image
                         source={bike} // Update path accordingly
                         style={[styles.vehicleImage, selectedVehicleType === 'Bike' && styles.selectedImage]}
@@ -45,9 +54,9 @@ export default function HomeScreen({ navigation }) {
                 </TouchableWithoutFeedback>
             </View>
 
-            <TouchableOpacity style={styles.submitButton} onPress={handleSearchSubmit}>
+            {/* <TouchableOpacity style={styles.submitButton} onPress={handleSearchSubmit}>
                 <Text style={styles.buttonText}>Submit</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 }
@@ -58,53 +67,55 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingHorizontal: 20,
     },
     header: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    picker: {
-        width: '80%',
-        height: 40,
-        borderColor: '#138808',
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 20,
-    },
-    imageContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        width: '100%',
-        marginBottom: 20,
-    },
-    vehicleImage: {
-        width: 100,
-        aspectRatio: 1,
-        resizeMode: 'contain',
-        backgroundColor: 'transparent', // Set background color to transparent
-    },
-    
-    selectedImage: {
-        borderColor: 'blue',
-        borderWidth: 2,
-    },
     searchBox: {
-        width: '80%',
-        height: 40,
-        borderColor: 'black',
+        width: '100%',
+        height: 50,
+        borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 20,
+        fontSize: 16,
+    },
+    imageContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '95%',
+        marginBottom: 20,
+    },
+    vehicleImage: {
+        width: '45%', // 45% of the container width
+        aspectRatio: 1, // Maintain a square aspect ratio
+        borderRadius: 10,
+        overflow: 'hidden', // Clip the shadow
+        elevation: 5, // Shadow for Android
+        shadowColor: 'black', // Shadow for iOS
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    selectedImage: {
+        borderWidth: 2,
+        borderColor: 'blue',
     },
     submitButton: {
-        backgroundColor: 'red',
-        padding: 15,
+        backgroundColor: 'blue',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
     },
     buttonText: {
         color: 'white',
         fontWeight: 'bold',
+        fontSize: 16,
     },
 });

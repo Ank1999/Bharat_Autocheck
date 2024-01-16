@@ -12,7 +12,7 @@ export default function WelcomeScreen({ navigation }) {
     useEffect(() => {
         // Bouncing animation configuration
         const bounceAnimation = Animated.sequence([
-            Animated.timing(bounceValue, { toValue: 1.2, duration: 200, easing: Easing.linear, useNativeDriver: true }),
+            Animated.timing(bounceValue, { toValue: 1.2, duration: 1000, easing: Easing.linear, useNativeDriver: true }),
             Animated.spring(bounceValue, { toValue: 1, friction: 4, useNativeDriver: true }),
         ]);
 

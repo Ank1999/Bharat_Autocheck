@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Import Picker component
+import pLogo from '../../assets/logo1.png'
+import car from '../../assets/car1.png'
+import bike from '../../assets/bike1.png'
 
 export default function HomeScreen({ navigation }) {
-
     const [searchText, setSearchText] = useState('');
+    const [selectedVehicleType, setSelectedVehicleType] = useState('Car');
 
     const handleSearchSubmit = () => {
         const vehicleDetails = {
-            vehicleName: 'Car',
+            vehicleName: selectedVehicleType,
             model: 'XYZ',
             year: '2022',
-            vehicleType: 'Sedan',
+            vehicleType: selectedVehicleType,
         };
 
         navigation.navigate('VehicleDetails', vehicleDetails);
@@ -19,8 +23,6 @@ export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Please Enter Vehicle Registration NO.</Text>
-
-            {/* Search Box */}
             <TextInput
                 style={styles.searchBox}
                 placeholder="Enter your vehicle number"
@@ -28,14 +30,28 @@ export default function HomeScreen({ navigation }) {
                 onChangeText={(text) => setSearchText(text)}
             />
 
-            {/* Submit Button */}
+            <View style={styles.imageContainer}>
+                <TouchableWithoutFeedback onPress={() => setSelectedVehicleType('Car')}>
+                    <Image
+                        source={car} // Update path accordingly
+                        style={[styles.vehicleImage, selectedVehicleType === 'Car' && styles.selectedImage]}
+                    />
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={() => setSelectedVehicleType('Bike')}>
+                    <Image
+                        source={bike} // Update path accordingly
+                        style={[styles.vehicleImage, selectedVehicleType === 'Bike' && styles.selectedImage]}
+                    />
+                </TouchableWithoutFeedback>
+            </View>
+
             <TouchableOpacity style={styles.submitButton} onPress={handleSearchSubmit}>
                 <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
         </View>
     );
-
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -47,6 +63,31 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
+    },
+    picker: {
+        width: '80%',
+        height: 40,
+        borderColor: '#138808',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 20,
+    },
+    imageContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+        marginBottom: 20,
+    },
+    vehicleImage: {
+        width: 100,
+        aspectRatio: 1,
+        resizeMode: 'contain',
+        backgroundColor: 'transparent', // Set background color to transparent
+    },
+    
+    selectedImage: {
+        borderColor: 'blue',
+        borderWidth: 2,
     },
     searchBox: {
         width: '80%',

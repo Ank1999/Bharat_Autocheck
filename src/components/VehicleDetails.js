@@ -1,62 +1,55 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function VehicleDetails() {
-
+export default function VehicleDetails({routes}) {
     const [vehicleName, setVehicleName] = useState('');
     const [model, setModel] = useState('');
     const [year, setYear] = useState('');
     const [vehicleType, setVehicleType] = useState('');
 
     const handleSave = () => {
-        // Add your logic to save or handle the vehicle details
         alert('Vehicle Details Saved:', { vehicleName, model, year, vehicleType });
-        // You can perform further actions like making an API call or updating state.
     };
 
     return (
         <View style={styles.container}>
+                    {console.log("",routes)}
+
             <Text style={styles.header}>Vehicle Details</Text>
 
-            {/* Vehicle Name */}
             <TextInput
                 style={styles.input}
                 placeholder="Vehicle Name"
                 value={vehicleName}
-                onChangeText={(text) => setVehicleName(text)}
+                onChangeText={setVehicleName}
             />
 
-            {/* Model */}
             <TextInput
                 style={styles.input}
                 placeholder="Model"
                 value={model}
-                onChangeText={(text) => setModel(text)}
+                onChangeText={setModel}
             />
 
-            {/* Year */}
             <TextInput
                 style={styles.input}
                 placeholder="Year"
                 value={year}
-                onChangeText={(text) => setYear(text)}
+                onChangeText={setYear}
             />
 
-            {/* Vehicle Type */}
             <TextInput
                 style={styles.input}
                 placeholder="Vehicle Type"
                 value={vehicleType}
-                onChangeText={(text) => setVehicleType(text)}
+                onChangeText={setVehicleType}
             />
 
-            {/* Save Button */}
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                 <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
         </View>
     );
-
 };
 
 const styles = StyleSheet.create({
@@ -64,28 +57,30 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#FFFFFF', // White background
     },
     header: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: '#FF9933', // Saffron color
     },
     input: {
         width: '80%',
         height: 40,
-        borderColor: 'gray',
+        borderColor: '#138808', // Green border
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 20,
     },
     saveButton: {
-        backgroundColor: 'red',
+        backgroundColor: '#FF9933', // Saffron background
         padding: 15,
         borderRadius: 5,
     },
     buttonText: {
-        color: 'white',
+        color: '#FFFFFF', // White text
         fontWeight: 'bold',
     },
 });

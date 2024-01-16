@@ -39,6 +39,7 @@ export default function RootNavigation() {
 
 const styles = StyleSheet.create({
     container: {
-        height: '100%'
+        height: '100%',
+        width : '100%'
     }
 })

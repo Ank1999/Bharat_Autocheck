@@ -1,32 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Import Picker component
+import { View, Text, TextInput, StyleSheet,TouchableOpacity, Modal, Image, TouchableWithoutFeedback } from 'react-native';
 import pLogo from '../../assets/logo1.png'
 import car from '../../assets/Car.jpg'
 import bike from '../../assets/Bike.png'
-
+import { Picker } from '@react-native-picker/picker';
 
 
 export default function HomeScreen({ navigation }) {
     const [searchText, setSearchText] = useState('');
     const [selectedVehicleType, setSelectedVehicleType] = useState(null);
+    const [selectedValue, setSelectedValue] = useState('option1');
 
     const handleSearchSubmit = () => {
         const vehicleDetails = {
             vehicleNumber: searchText,
-            model: 'XYZ',
-            year: '2022',
             vehicleType: selectedVehicleType,  // Use the selectedVehicleType value
         };
-    
-    //    const data = (JSON.stringify(vehicleDetails, null, 2)); 
 
-        navigation.navigate('VehicleDetails', {...vehicleDetails})
+        //    const data = (JSON.stringify(vehicleDetails, null, 2)); 
+
+        navigation.navigate('VehicleDetails', { ...vehicleDetails })
     };
 
     const handleImageClick = (vehicleType) => {
         setSelectedVehicleType(vehicleType);
         handleSearchSubmit();  // Optionally, you can call handleSearchSubmit here if needed
+    };
+
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedOption, setSelectedOption] = useState('Option 1');
+    const options = ['Option 1', 'Option 2', 'Option 3'];
+
+    const handleOptionSelect = (option) => {
+        setSelectedOption(option);
+        setModalVisible(false);
     };
 
     return (
@@ -38,6 +46,30 @@ export default function HomeScreen({ navigation }) {
                 value={searchText}
                 onChangeText={(text) => setSearchText(text)}
             />
+
+            {/* <View style={styles.dropDownContainer}>
+                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.dropdownButton}>
+                    <Text>{selectedOption}</Text>
+                </TouchableOpacity>
+
+                <Modal
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalContainer}>
+                        {options.map((option, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={styles.option}
+                                onPress={() => handleOptionSelect(option)}
+                            >
+                                <Text>{option}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </Modal>
+            </View> */}
 
             <View style={styles.imageContainer}>
                 <TouchableWithoutFeedback onPress={() => handleImageClick('Car')}>
@@ -118,4 +150,32 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+    dropDownContainer: {
+        margin: 20,
+        width:'100%',
+        height: 80,
+
+    },
+    dropdownButton: {
+        borderWidth: 1,
+        borderColor: '#888',
+        borderRadius: 8,
+        padding: 10,
+        alignItems: 'center',
+        height: 50,
+
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    option: {
+        padding: 15, // Increase padding for better spacing
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        width: '80%',
+        alignItems: 'center',
+    }
 });

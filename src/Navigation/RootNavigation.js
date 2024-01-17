@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import VehicleDetails from '../components/VehicleDetails';
+import EstimationDetails from '../components/EstimationDetails';
+import Login from '../components/Login';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,16 @@ export default function RootNavigation() {
                             headerShown: false
                         }}
                     />
+                    <Stack.Screen name="EstimationDetails" component={EstimationDetails}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen name="Login" component={Login}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
                 </Stack.Navigator>
             </NavigationContainer>
         </View>
@@ -40,6 +52,6 @@ export default function RootNavigation() {
 const styles = StyleSheet.create({
     container: {
         height: '100%',
-        width : '100%'
+        width: '100%'
     }
 })

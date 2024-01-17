@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-const VehicleDetails = ({ route }) => {
+const VehicleDetails = ({ route, navigation }) => {
     const [vehicleNumber, setVehicleNumber] = useState('');
+    const [brand, setBrand] = useState('');
     const [model, setModel] = useState('');
     const [year, setYear] = useState('');
     const [vehicleType, setVehicleType] = useState('');
+    const [chasisNo, setChasis] = useState('');
+    const [engineNo, setEngine] = useState('');
 
     useEffect(() => {
         if (route.params) {
@@ -19,13 +22,16 @@ const VehicleDetails = ({ route }) => {
     // const { vehicleNumber, selectedVehicleType } = route.params;
 
     const handleSave = () => {
-        alert('Vehicle Details Saved:', { vehicleName, model, year, vehicleType });
+        alert('Vehicle Details Saved:', { vehicleNumber, model, year, vehicleType });
+        navigation.navigate('EstimationDetails');
+
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Vehicle Details</Text>
 
+            {/* <Text style={styles.title}>Enter Vehicle Number:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Vehicle Number"
@@ -34,6 +40,7 @@ const VehicleDetails = ({ route }) => {
                 editable={false}
             />
 
+            {/* <Text style={styles.title}>Enter Vehicle Type:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Vehicle Type"
@@ -42,6 +49,15 @@ const VehicleDetails = ({ route }) => {
                 editable={false}
             />
 
+            {/* <Text style={styles.title}>Enter Brand:</Text> */}
+            <TextInput
+                style={styles.input}
+                placeholder="Brand"
+                value={brand}
+                onChangeText={setBrand}
+            />
+
+            {/* <Text style={styles.title}>Enter model:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Model"
@@ -49,13 +65,29 @@ const VehicleDetails = ({ route }) => {
                 onChangeText={setModel}
             />
 
+            {/* <Text style={styles.title}>Enter Make:</Text> */}
             <TextInput
                 style={styles.input}
-                placeholder="Year"
+                placeholder="Make"
                 value={year}
                 onChangeText={setYear}
             />
 
+            {/* <Text style={styles.title}>Enter Chasis No:</Text> */}
+            <TextInput
+                style={styles.input}
+                placeholder="Chasis No."
+                value={model}
+                onChangeText={setChasis}
+            />
+
+            {/* <Text style={styles.title}>Enter Engine No:</Text> */}
+            <TextInput
+                style={styles.input}
+                placeholder="Engine No."
+                value={year}
+                onChangeText={setEngine}
+            />
 
 
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -75,6 +107,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#FFFFFF', // White background
+    },
+    title: {
+        fontSize: 18,
+        marginBottom: 5,
+        textAlign:'left',
+        justifyContent:'flex-start',
+        alignItems:'flex-start',
+        alignSelf:'flex-start',
+        paddingLeft:20
     },
     header: {
         fontSize: 24,

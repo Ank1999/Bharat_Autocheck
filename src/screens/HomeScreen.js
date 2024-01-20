@@ -4,10 +4,10 @@ import pLogo from '../../assets/logo1.png'
 import car from '../../assets/Car.jpg'
 import bike from '../../assets/Bike.png'
 import AppHeader from '../Global/AppHeader';
-// import { Header } from 'react-native/Libraries/NewAppScreen';
 
 
-export default function  ({ navigation }) {
+
+export default function ({ navigation }) {
     const [searchText, setSearchText] = useState('');
     const [selectedVehicleType, setSelectedVehicleType] = useState(null);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -39,14 +39,14 @@ export default function  ({ navigation }) {
         // Add your logic here
         // For example, you might navigate to a profile screen or open a menu
         console.log(' button clicked');
-        navigation.navigate('UserProfile'); 
+        navigation.navigate('UserProfile');
 
     };
 
     return (
         <View style={styles.container}>
             {/* <header handleProfileClick={handleProfileClick} handleProfileClick={handleProfileClick} /> */}
-            <AppHeader  handleProfileClick={handleProfileClick}/>
+            <AppHeader handleProfileClick={handleProfileClick} />
 
             {/* Button Container */}
             <View style={styles.buttonContainer}>
@@ -65,18 +65,33 @@ export default function  ({ navigation }) {
             {selectedOption && (
                 <View>
                     <Text style={styles.header}>Please Enter {selectedOption} Details.</Text>
+
                     {/* Radio Buttons */}
                     <View style={styles.radioButtonContainer}>
-                        <TouchableOpacity
-                            style={[styles.radioButton, radioSelection === 'Used' && styles.selectedRadioButton]}
-                            onPress={() => handleRadioSelect('Used')}>
-                            <Text>Used</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.radioButton, radioSelection === 'New' && styles.selectedRadioButton]}
-                            onPress={() => handleRadioSelect('New')}>
-                            <Text>New</Text>
-                        </TouchableOpacity>
+
+                        <View style={styles.radioButtonWithText}>
+                            <TouchableOpacity
+                                style={[styles.radioButton, radioSelection === 'Used' && styles.selectedRadioButton,]}
+                                onPress={() => handleRadioSelect('Used')}>
+                            </TouchableOpacity>
+                            <Text
+                                style={[styles.radioText, radioSelection === 'Used' && styles.selectedRadioText,]}>
+                                Used
+                            </Text>
+                        </View>
+
+                        <View style={styles.radioButtonWithText}>
+                            <TouchableOpacity
+                                style={[styles.radioButton, radioSelection === 'New' && styles.selectedRadioButton,]}
+                                onPress={() => handleRadioSelect('New')}>
+                                {/* You can place the radio button icon here if needed */}
+                            </TouchableOpacity>
+                            <Text
+                                style={[styles.radioText, radioSelection === 'New' && styles.selectedRadioText,]}>
+                                New
+                            </Text>
+                        </View>
+
                     </View>
                     <TextInput
                         style={styles.searchBox}
@@ -90,7 +105,7 @@ export default function  ({ navigation }) {
                     {isInputClicked && (
                         <View>
                             <TextInput style={styles.searchBox} placeholder="User Name" />
-                            <TextInput style={styles.searchBox} placeholder="User Contact Number" />
+                            <TextInput style={styles.searchBox} placeholder="User gmail" />
                             <TextInput style={styles.searchBox} placeholder="User Contact Number" />
                             {/* Add more TextInput components as needed */}
                         </View>
@@ -102,7 +117,6 @@ export default function  ({ navigation }) {
                     </TouchableOpacity>
                 </View>
             )}
-
 
         </View>
     );
@@ -144,21 +158,39 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
-        marginTop:150
+        marginTop: 150
     },
     radioButtonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        margin: 20,
     },
     radioButton: {
-        padding: 10,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 5,
+        width: 28,
+        height: 28,
+        borderRadius: 15,
+        borderWidth: 2,
+        borderColor: '#333', // Border color for unselected state
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     selectedRadioButton: {
-        backgroundColor: '#ddd', // Highlight color for selected radio button
+        borderColor: '#007AFF', // Border color for selected state
+        backgroundColor:'red'
+    },
+    radioText: {
+        fontSize: 16,
+        color: '#333', // Text color for unselected state
+        marginLeft:10,
+        fontWeight:'bold'
+    },
+    selectedRadioText: {
+        color: '#007AFF', // Text color for selected state
+    },
+    radioButtonWithText: {
+        flexDirection: 'row', // To align text and radio button horizontally
+        alignItems: 'center', // To vertically center-align text and radio button
     },
     searchBox: {
         minWidth: '100%',

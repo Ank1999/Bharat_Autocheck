@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import React from 'react'
 import bike from '../../assets/Bike.png'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 
 const AppHeader = ({ handleProfileClick }) => {
@@ -8,10 +10,7 @@ const AppHeader = ({ handleProfileClick }) => {
         <View style={styles.headerBar}>
             <Text style={styles.headerTitle}>Welcome, Ank</Text>
             <TouchableOpacity style={styles.profileButton} onPress={handleProfileClick}>
-                <Image
-                    source={bike} // Update path accordingly
-                    style={styles.profileIcon}
-                />
+                <FontAwesomeIcon icon={faUser} size={22} style={styles.profileIcon} />
             </TouchableOpacity>
         </View>
     );
@@ -38,9 +37,9 @@ const styles = StyleSheet.create({
         // Styling for the profile button
     },
     profileIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        // fontSize:'40',
+        color: 'red',
+        margin: 10
     },
 });
 

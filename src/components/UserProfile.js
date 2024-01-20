@@ -1,74 +1,56 @@
-import * as React from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-} from "react-native";
-import car from '../../assets/Car.jpg'
-import bike from '../../assets/Bike.png'
+import React from "react";
+import { View, StyleSheet, Image, Text } from "react-native";
+import car from "../../assets/Car.jpg";
+import profile from "../../assets/Profile.png";
+import forwardArrow from "../../assets/forwardArrow.png";
+import invite from "../../assets/invite.png";
 
 export default function UserProfile(props) {
   return (
-    <View style={styles.view1}>
-      <View style={styles.view2}>
-        <Text>Profile</Text>
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Profile</Text>
       </View>
-      <Image
-        resizeMode="contain"
-        source={car}
-        style={styles.image1}
-      />
-      <View style={styles.view3}>
-        <View style={styles.view4}>
-          <Image
-            resizeMode="contain"
-            source={car}
-            style={styles.image2}
-          />
-          <View style={styles.view5}>
-            <Text>Personal Details</Text>
-          </View>
-        </View>
-        <Image
-          resizeMode="contain"
-          source={forwardArrow}
-          style={styles.image9}
-        />
-      </View>
-      <View style={styles.view3}>
-        <View style={styles.view4}>
-          <Image
-            resizeMode="contain"
-            source={car}
-            style={styles.image2}
-          />
-          <View style={styles.view5}>
-            <Text>Request Details</Text>
-          </View>
-        </View>
-        <Image
-          resizeMode="contain"
-          source={forwardArrow}
-          style={styles.image9}
-        />
-      </View>
-      <View style={styles.view3}>
-        <View style={styles.view4}>
-          <Image
-            resizeMode="contain"
-            source={invite}
-            style={styles.image8}
-          />
-          <View style={styles.view5}>
-            <Text>Invite Friend to Vehicle Essentials</Text>
-          </View>
-        </View>
-        <Image
-          resizeMode="contain"
-          source={forwardArrow}
+      <Image resizeMode="contain" source={profile} style={styles.profileImage} />
 
-          style={styles.image9}
+      <View style={styles.rowContainer}>
+        <View style={styles.rowContent}>
+          <Image resizeMode="contain" source={profile} style={styles.logo} />
+          <View style={styles.textContainer}>
+            <Text style={styles.rowText}>Personal Details</Text>
+          </View>
+        </View>
+        <Image
+          resizeMode="contain"
+          source={forwardArrow}
+          style={styles.arrowLogo}
+        />
+      </View>
+
+      <View style={styles.rowContainer}>
+        <View style={styles.rowContent}>
+          <Image resizeMode="contain" source={car} style={styles.logo} />
+          <View style={styles.textContainer}>
+            <Text style={styles.rowText}>Request Details</Text>
+          </View>
+        </View>
+        <Image
+          resizeMode="contain"
+          source={forwardArrow}
+          style={styles.arrowLogo}
+        />
+      </View>
+      <View style={styles.rowContainer}>
+        <View style={styles.rowContent}>
+          <Image resizeMode="contain" source={invite} style={styles.logo} />
+          <View style={styles.textContainer}>
+            <Text style={styles.rowText}>Invite Friend </Text>
+          </View>
+        </View>
+        <Image
+          resizeMode="contain"
+          source={forwardArrow}
+          style={styles.arrowLogo}
         />
       </View>
     </View>
@@ -76,78 +58,74 @@ export default function UserProfile(props) {
 }
 
 const styles = StyleSheet.create({
-  view1: {
-    // backgroundColor: "#FFF",
+  container: {
     display: "flex",
-    // maxWidth: 480,
     width: "100%",
     flexDirection: "column",
-    margin: "0 auto",
-    padding: "50px 28px 23px",
+    margin: 0,
+    padding: 10,
   },
-  view2: {
+  headerContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 40,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
     color: "#00214E",
-    textAlign: "center",
-    alignSelf: "start",
-    whiteSpace: "nowrap",
-    margin: "6px 0 0 15px",
-    font: "600 35px/69% Poppins, sans-serif ",
   },
-  image1: {
-    overflow: "hidden",
+  profileImage: {
     alignSelf: "center",
-    position: "relative",
-    display: "flex",
-    marginTop: 38,
+    marginTop: 100,
     width: 183,
-    maxWidth: "100%",
-    flexDirection: "column",
-    aspectRatio: "0.92",
+    height: 200, // Adjust the height as needed
   },
-  view3: {
-    borderRadius: 24,
-    boxShadow: "0px 0px 24px -6px rgba(0, 0, 0, 0.25)",
+  rowContainer: {
+    borderRadius: 15,
     backgroundColor: "#FFF",
     alignSelf: "stretch",
-    display: "flex",
-    marginTop: 45,
-    width: "100%",
-    alignItems: "center", // Center-align content horizontally
+    marginTop: 30,
+    alignItems: "center",
     flexDirection: "row",
-    padding: "7%",
+    height:65,
+    padding: 10, // Adjust the padding as needed
+    shadowColor: "rgba(0, 0, 0, 0.25)",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 24,
+    shadowOpacity: 1,
+    elevation: 5,
   },
-  view4: {
+  rowContent: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
   },
-  image2: {
-    overflow: "hidden",
-    position: "relative",
-    display: "flex",
+  logo: {
     width: 28,
-    flexShrink: 0,
-    maxWidth: "100%",
-    flexDirection: "column",
-    aspectRatio: "1",
+    height: 28, // Adjust the height as needed
   },
-  view5: {
+  arrowLogo:{
+    width: 25,
+    height: 25,
+    position:'absolute',
+    left:'96%',
+  },
+  textContainer: {
     flex: 1,
     marginLeft: 16,
+  },
+  rowText: {
     color: "#00214E",
-    font: "600 19px/126% Poppins, sans-serif",
+    fontSize: 19,
+    fontWeight: '600',
+    fontFamily: "Poppins", // Adjust the font family as needed
+    lineHeight: 24, // Adjust the line height as needed
   },
-  image8: {
-    fill: "#00214E",
-    overflow: "hidden",
-    position: "relative",
-    display: "flex",
-    width: 29,
-    flexShrink: 0,
-    maxWidth: "100%",
-    flexDirection: "column",
-    aspectRatio: "1.45",
-  },
-  image9: {
-  },
+  
 });
+
+

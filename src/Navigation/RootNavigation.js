@@ -9,6 +9,7 @@ import VehicleDetails from '../components/VehicleDetails';
 import EstimationDetails from '../components/EstimationDetails';
 import Login from '../components/Login';
 import UserProfile from '../components/UserProfile';
+import BottomTabNavigator from './BottomTabNavigation';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,11 @@ export default function RootNavigation() {
                         options={{
                             headerShown: false
                         }}
+                    />
+                    <Stack.Screen 
+                        name="Main" 
+                        component={BottomTabNavigator}
+                        options={{ headerShown: false }}
                     />
                 </Stack.Navigator>
             </NavigationContainer>

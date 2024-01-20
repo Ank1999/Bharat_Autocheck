@@ -13,7 +13,8 @@ export default function Login({navigation}) {
             console.log('Verify OTP: ', otpCode);
             // Here you would verify the OTP against your backend
             Alert.alert('OTP Verification', 'The OTP verification is successful!', [{ text: 'OK' }]);
-            navigation.navigate('HomeScreen'); 
+            // navigation.navigate('HomeScreen'); 
+            navigation.navigate('Main');
         } else {
             // Send OTP code
             console.log('Send OTP to: ', phoneNumber);
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
         paddingHorizontal: 10,
         paddingVertical: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         marginBottom: 10, // You can reduce this value if needed
     },
     otpInputsContainer: {
@@ -124,6 +125,8 @@ const styles = StyleSheet.create({
         padding: 15,
         fontSize: 18,
         textAlign: 'center',
+        borderRadius: 15,
+
     },
     button: {
         backgroundColor: '#34C759',

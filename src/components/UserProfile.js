@@ -5,12 +5,8 @@ import {
   Image,
   Text,
 } from "react-native";
-import forwardArrow from '../../assets/forwardArrow.png'
-import user from '../../assets/user.png'
 import car from '../../assets/Car.jpg'
-import requestDetail from '../../assets/requestDetails.png'
-import invite from '../../assets/invite.png'
-
+import bike from '../../assets/Bike.png'
 
 export default function UserProfile(props) {
   return (
@@ -27,7 +23,7 @@ export default function UserProfile(props) {
         <View style={styles.view4}>
           <Image
             resizeMode="contain"
-            source={user}
+            source={car}
             style={styles.image2}
           />
           <View style={styles.view5}>
@@ -44,7 +40,7 @@ export default function UserProfile(props) {
         <View style={styles.view4}>
           <Image
             resizeMode="contain"
-            source={requestDetail}
+            source={car}
             style={styles.image2}
           />
           <View style={styles.view5}>

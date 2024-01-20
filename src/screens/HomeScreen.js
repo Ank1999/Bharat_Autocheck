@@ -39,7 +39,7 @@ export default function  ({ navigation }) {
         // Add your logic here
         // For example, you might navigate to a profile screen or open a menu
         console.log(' button clicked');
-        navigation.navigate('UserProfile');
+        navigation.navigate('UserProfile'); 
 
     };
 

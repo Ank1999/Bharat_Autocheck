@@ -55,6 +55,8 @@ export default function RootNavigation() {
     )
 }
 
+
+
 const styles = StyleSheet.create({
     container: {
         height: '100%',

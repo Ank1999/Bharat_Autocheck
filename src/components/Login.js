@@ -13,7 +13,7 @@ export default function Login({navigation}) {
             console.log('Verify OTP: ', otpCode);
             // Here you would verify the OTP against your backend
             Alert.alert('OTP Verification', 'The OTP verification is successful!', [{ text: 'OK' }]);
-            navigation.navigate('EstimationDetails'); 
+            navigation.navigate('HomeScreen'); 
         } else {
             // Send OTP code
             console.log('Send OTP to: ', phoneNumber);

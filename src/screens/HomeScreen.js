@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }) {
     const handleSubmit = () => {
         const vehicleDetails = {
             vehicleNumber: searchText,
-            vehicleType: selectedVehicleType,  // Use the selectedVehicleType value
+            vehicleType: selectedOption,  // Use the selectedVehicleType value
         };
         navigation.navigate('VehicleDetails', { ...vehicleDetails })
     };

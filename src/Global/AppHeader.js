@@ -3,7 +3,7 @@ import React from 'react'
 import bike from '../../assets/Bike.png'
 
 
-const Header = ({ handleProfileClick }) => {
+const AppHeader = ({ handleProfileClick }) => {
     return (
         <View style={styles.headerBar}>
             <Text style={styles.headerTitle}>Welcome, Ank</Text>
@@ -44,4 +44,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Header;
+export default AppHeader;

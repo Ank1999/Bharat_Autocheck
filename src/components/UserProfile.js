@@ -5,6 +5,12 @@ import {
   Image,
   Text,
 } from "react-native";
+import forwardArrow from '../../assets/forwardArrow.png'
+import user from '../../assets/user.png'
+import car from '../../assets/Car.jpg'
+import requestDetail from '../../assets/requestDetails.png'
+import invite from '../../assets/invite.png'
+
 
 export default function UserProfile(props) {
   return (
@@ -14,18 +20,14 @@ export default function UserProfile(props) {
       </View>
       <Image
         resizeMode="contain"
-        source={{
-          uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/3397bf85e67b7ecbf9f126ac259f9c3acb4e537a530112eeaa28eeceb92c7d9a?",
-        }}
+        source={car}
         style={styles.image1}
       />
       <View style={styles.view3}>
         <View style={styles.view4}>
           <Image
             resizeMode="contain"
-            source={{
-              uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/89408971b9bbc048988a83c4deb26ae71edb2384a1d4c6203613758d6aa39597?",
-            }}
+            source={user}
             style={styles.image2}
           />
           <View style={styles.view5}>
@@ -34,9 +36,7 @@ export default function UserProfile(props) {
         </View>
         <Image
           resizeMode="contain"
-          source={{
-            uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/6a5810c1cef2b34711480d350568e3eadbbaf5c3cd9b25627b10daa3afc3e4b6?",
-          }}
+          source={forwardArrow}
           style={styles.image9}
         />
       </View>
@@ -44,9 +44,7 @@ export default function UserProfile(props) {
         <View style={styles.view4}>
           <Image
             resizeMode="contain"
-            source={{
-              uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/f81164b786e4c4af4b93b3350772b1fa365ba7eb9760b95f8d07a8ce23a17164?",
-            }}
+            source={requestDetail}
             style={styles.image2}
           />
           <View style={styles.view5}>
@@ -55,9 +53,7 @@ export default function UserProfile(props) {
         </View>
         <Image
           resizeMode="contain"
-          source={{
-            uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/6a5810c1cef2b34711480d350568e3eadbbaf5c3cd9b25627b10daa3afc3e4b6?",
-          }}
+          source={forwardArrow}
           style={styles.image9}
         />
       </View>
@@ -65,9 +61,7 @@ export default function UserProfile(props) {
         <View style={styles.view4}>
           <Image
             resizeMode="contain"
-            source={{
-              uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/ef74c5b6141ab2b0eefd46828d1866ba4a29a84c7b51483f61aa37d70d755e0e?",
-            }}
+            source={invite}
             style={styles.image8}
           />
           <View style={styles.view5}>
@@ -76,9 +70,8 @@ export default function UserProfile(props) {
         </View>
         <Image
           resizeMode="contain"
-          source={{
-            uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/6a5810c1cef2b34711480d350568e3eadbbaf5c3cd9b25627b10daa3afc3e4b6?",
-          }}
+          source={forwardArrow}
+
           style={styles.image9}
         />
       </View>
@@ -88,7 +81,7 @@ export default function UserProfile(props) {
 
 const styles = StyleSheet.create({
   view1: {
-    backgroundColor: "#FFF",
+    // backgroundColor: "#FFF",
     display: "flex",
     // maxWidth: 480,
     width: "100%",
@@ -160,17 +153,5 @@ const styles = StyleSheet.create({
     aspectRatio: "1.45",
   },
   image9: {
-    strokeWidth: 1,
-    stroke: "#545454",
-    overflow: "hidden",
-    alignSelf: "center",
-    position: "relative",
-    display: "flex",
-    width: 9,
-    flexShrink: 0,
-    maxWidth: "100%",
-    flexDirection: "column",
-    marginLeft: "5%",
-    aspectRatio: "0.56",
   },
 });

@@ -8,6 +8,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import VehicleDetails from '../components/VehicleDetails';
 import EstimationDetails from '../components/EstimationDetails';
 import Login from '../components/Login';
+import UserProfile from '../components/UserProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,11 @@ export default function RootNavigation() {
                         }}
                     />
                     <Stack.Screen name="Login" component={Login}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen name="UserProfile" component={UserProfile}
                         options={{
                             headerShown: false
                         }}

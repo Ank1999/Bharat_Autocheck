@@ -3,10 +3,11 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, Image, Touc
 import pLogo from '../../assets/logo1.png'
 import car from '../../assets/Car.jpg'
 import bike from '../../assets/Bike.png'
-import Header from '../Global/header';
+import AppHeader from '../Global/AppHeader';
+// import { Header } from 'react-native/Libraries/NewAppScreen';
 
 
-export default function HomeScreen({ navigation }) {
+export default function  ({ navigation }) {
     const [searchText, setSearchText] = useState('');
     const [selectedVehicleType, setSelectedVehicleType] = useState(null);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -38,11 +39,14 @@ export default function HomeScreen({ navigation }) {
         // Add your logic here
         // For example, you might navigate to a profile screen or open a menu
         console.log(' button clicked');
+        navigation.navigate('UserProfile');
+
     };
 
     return (
         <View style={styles.container}>
-            <Header handleProfileClick={handleProfileClick} />
+            {/* <header handleProfileClick={handleProfileClick} handleProfileClick={handleProfileClick} /> */}
+            <AppHeader  handleProfileClick={handleProfileClick}/>
 
             {/* Button Container */}
             <View style={styles.buttonContainer}>

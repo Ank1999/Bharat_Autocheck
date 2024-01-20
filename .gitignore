@@ -18,7 +18,7 @@ yarn-error.log*
 # Expo (if using Expo)
 /.expo/*
 .expo-shared/
-.expo/web/cache
+.expo/*
 
 # Environment variables
 .env

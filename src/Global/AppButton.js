@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, SafeAreaView, Image } from 'react-native';
+import PaymentMethod from '../components/PaymentMethod';
+import logo from '../../assets/favicon.png'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -10,10 +12,23 @@ const AppButton = ({ title, page, navigation }) => {
         navigation.navigate(page); // Use the name of the screen you want to navigate to
     };
 
+    const onCheckoutPage = () => {
+        // Do any other work here before navigating
+        navigation.navigate(PaymentMethod); // Use the name of the screen you want to navigate to
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.summaryContainer}>
-                <Text style={styles.itemCountText}> 900 $</Text>
+                {/* <Text onPress={onCheckoutPage} style={styles.itemCountTextß}> 900 $</Text> */}
+                <TouchableOpacity onPress={onCheckoutPage} style={styles.buttonContainer}>
+                    <View style={styles.textContainer}>
+                        <Image source={logo} style={styles.icon} />
+                        <Text style={styles.upperText}>PAY USING</Text>
+                        <Image source={logo} style={styles.chevron} />
+                    </View>
+                    <Text style={styles.lowerText}>Google Pay UPI</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={onCheckout} style={styles.checkoutButton}>
                     <Text style={styles.checkoutButtonText}>{title}</Text>
                 </TouchableOpacity>
@@ -79,6 +94,38 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    buttonContainer: {
+        backgroundColor: '#FFFFFF', // Replace with the color of your button background
+        padding: 5, // Replace with your desired padding
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+    },
+    icon: {
+        width: 18, // Replace with the width of your icon
+        height: 18, // Replace with the height of your icon
+        resizeMode: 'contain',
+    },
+    textContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 5, // Adjust the space between the icon and the text as needed
+    },
+    upperText: {
+        fontSize: 10, // Replace with your desired font size
+        // fontWeight: 'bold', // Replace with your desired font weight
+        marginRight: 5, // Adjust the space between the text and the chevron as needed
+    },
+    chevron: {
+        width: 12, // Replace with the width of your chevron icon
+        height: 12, // Replace with the height of your chevron icon
+        resizeMode: 'contain',
+    },
+    lowerText: {
+        fontSize: 14, // Replace with your desired font size
+        fontWeight: 'bold', // Replace with your desired font weight
+        marginTop: 5, // Adjust the space between the upper text and lower text as needed
     },
 });
 export default AppButton;

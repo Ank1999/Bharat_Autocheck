@@ -10,6 +10,7 @@ import EstimationDetails from '../components/EstimationDetails';
 import Login from '../components/Login';
 import UserProfile from '../components/UserProfile';
 import BottomTabNavigator from './BottomTabNavigation';
+import PaymentMethod from '../components/PaymentMethod';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,11 @@ export default function RootNavigation() {
                     <Stack.Screen name="UserProfile" component={UserProfile}
                         options={{
                             headerShown: false
+                        }}
+                    />
+                    <Stack.Screen name="PaymentMethod" component={PaymentMethod}
+                        options={{
+                            headerShown: true
                         }}
                     />
                     <Stack.Screen 

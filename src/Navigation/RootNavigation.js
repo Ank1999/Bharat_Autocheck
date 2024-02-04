@@ -11,6 +11,7 @@ import Login from '../components/Login';
 import UserProfile from '../components/UserProfile';
 import BottomTabNavigator from './BottomTabNavigation';
 import PaymentMethod from '../components/PaymentMethod';
+import Registration from '../components/Registration';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,11 @@ export default function RootNavigation() {
                         }}
                     />
                     <Stack.Screen name="Login" component={Login}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                     <Stack.Screen name="Registration" component={Registration}
                         options={{
                             headerShown: false
                         }}

@@ -12,7 +12,7 @@ export default function WelcomeScreen({ navigation }) {
     useEffect(() => {
         // Bouncing animation configuration
         const bounceAnimation = Animated.sequence([
-            Animated.timing(bounceValue, { toValue: 1.2, duration: 1000, easing: Easing.linear, useNativeDriver: true }),
+            Animated.timing(bounceValue, { toValue: 1.2, duration: 600, easing: Easing.linear, useNativeDriver: true }),
             Animated.spring(bounceValue, { toValue: 1, friction: 4, useNativeDriver: true }),
         ]);
 
@@ -24,7 +24,7 @@ export default function WelcomeScreen({ navigation }) {
             navigation.navigate('Login');
         };
 
-        const timeout = setTimeout(navigateToHome, 200 * 3);
+        const timeout = setTimeout(navigateToHome, 100 * 3);
 
         // Cleanup the timeout on component unmount
         return () => clearTimeout(timeout);
@@ -32,7 +32,7 @@ export default function WelcomeScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.welcomeText}>Welcome to Bharat AutoCheck</Text>
+            <Text style={styles.welcomeText}>Welcome to Reveal</Text>
             <View style={styles.pLogo}>
                 <Animated.Image
                     style={[styles.logo, { transform: [{ scale: bounceValue }] }]}

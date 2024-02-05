@@ -17,7 +17,7 @@ export default function Login() {
     navigation.navigate('VehicleDetails');
   };
 
-  const handleRegistration = () =>{
+  const handleRegistration = () => {
     navigation.navigate('Registration');
   }
 
@@ -55,9 +55,15 @@ export default function Login() {
         </TouchableOpacity>
         <Text style={styles.orContinueWithText}>Or continue with</Text>
         <View style={styles.socialIcons}>
-          <AntDesign name="google" size={24} color="black" />
+          <View style={styles.iconContainer}>
+            <AntDesign name="google" size={24} color="black" />
+          </View>
+          <View style={styles.iconContainer}>
             <FontAwesome name="facebook" size={24} color="black" />
+          </View>
+          <View style={styles.iconContainer}>
             <AntDesign name="apple1" size={24} color="black" />
+          </View>
         </View>
       </View>
     </View>
@@ -77,32 +83,34 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    bottom: 100,
+    bottom: 10,
     color: '#000',
   },
   subheader: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
-    bottom: 80,
+    bottom: 0,
   },
   input: {
     width: '100%',
     height: 60,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: '#e4e4e7',
     borderRadius: 10,
     backgroundColor: '#fff',
+    top:70
   },
-  forgotPasswordContainer:{
-    alignSelf:'flex-end'
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end'
   },
   forgotPassword: {
     marginBottom: 20,
     marginTop: 20,
     color: '#6c6c6c',
+    top:45
   },
   signInButton: {
     width: '100%',
@@ -110,8 +118,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#007bff',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
+    borderRadius: 10,
     marginBottom: 20,
+    top:40
   },
   signInButtonText: {
     color: '#fff',
@@ -128,12 +137,22 @@ const styles = StyleSheet.create({
   orContinueWithText: {
     marginVertical: 10,
     color: '#6c6c6c',
-    top:70
+    top: 80
   },
   socialIcons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '60%',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    // Add any other styling you need for this container
+  },
+  iconContainer: {
+    backgroundColor: 'cyan',
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin:10,
     top:100
-  }
+  },
 });

@@ -16,7 +16,7 @@ export default function Registration() {
     const handleSignUp = () => {
         navigation.navigate('Login');
     };
-    
+
 
     return (
         // <ScrollView contentContainerStyle={styles.containerS}>
@@ -56,9 +56,15 @@ export default function Registration() {
                 </TouchableOpacity>
                 <Text style={styles.orContinueWithText}>Or continue with</Text>
                 <View style={styles.socialIcons}>
-                    <AntDesign name="google" size={24} color="black" />
-                    <FontAwesome name="facebook" size={24} color="black" />
-                    <AntDesign name="apple1" size={24} color="black" />
+                    <View style={styles.iconContainer}>
+                        <AntDesign name="google" size={24} color="black" />
+                    </View>
+                    <View style={styles.iconContainer}>
+                        <FontAwesome name="facebook" size={24} color="black" />
+                    </View>
+                    <View style={styles.iconContainer}>
+                        <AntDesign name="apple1" size={24} color="black" />
+                    </View>
                 </View>
             </View>
         </View>
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
         bottom: 80,
-        textAlign:'center'
+        textAlign: 'center'
     },
     input: {
         width: '100%',
@@ -126,8 +132,18 @@ const styles = StyleSheet.create({
     },
     socialIcons: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '60%',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        // Add any other styling you need for this container
+    },
+    iconContainer: {
+        backgroundColor: 'cyan',
+        width: 50,
+        height: 50,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 10,
         top: 100
-    }
+    },
 });

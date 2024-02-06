@@ -14,7 +14,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   const handleSignIn = () => {
-    navigation.navigate('VehicleDetails');
+    // navigation.navigate('HomeScreen');
+    navigation.navigate('BottomTab');
   };
 
   const handleRegistration = () => {
@@ -72,6 +73,11 @@ export default function Login() {
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: '#f2f2f2',
+
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -101,7 +107,7 @@ const styles = StyleSheet.create({
     borderColor: '#e4e4e7',
     borderRadius: 10,
     backgroundColor: '#fff',
-    top:70
+    top: 70
   },
   forgotPasswordContainer: {
     alignSelf: 'flex-end'
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 20,
     color: '#6c6c6c',
-    top:45
+    top: 45
   },
   signInButton: {
     width: '100%',
@@ -120,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     marginBottom: 20,
-    top:40
+    top: 40
   },
   signInButtonText: {
     color: '#fff',
@@ -130,14 +136,18 @@ const styles = StyleSheet.create({
   newAccountSection: {
     width: '100%',
     alignItems: 'center',
+    top: 80
   },
+
   createAccountText: {
     color: '#007bff',
+    // top: 80
+
   },
   orContinueWithText: {
     marginVertical: 10,
     color: '#6c6c6c',
-    top: 80
+    top: 10
   },
   socialIcons: {
     flexDirection: 'row',
@@ -152,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    margin:10,
-    top:100
+    margin: 10,
+    top: 30
   },
 });

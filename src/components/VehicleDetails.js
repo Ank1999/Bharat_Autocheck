@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import bike from '../../assets/Bike.png'
+import bike from '../../assets/Bikes.png'
+import car from '../../assets/carr.png'
+import repair from '../../assets/CarRepair.png'
+import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import AppHeader from '../Global/AppHeader'
 
 
 const VehicleDetails = ({ route, navigation }) => {
@@ -28,61 +32,42 @@ const VehicleDetails = ({ route, navigation }) => {
         navigation.navigate('EstimationDetails');
 
     };
+    const handleBack = () => {
+        navigation.goBack();
+    }
 
     return (
         <View style={styles.container}>
+
+            {/* <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                <AntDesign name="left" style={styles.backIcon} size={24} color="black" />
+            </TouchableOpacity> */}
+
+            <AppHeader showBackButton={true}
+                onBackButtonPress={() => navigation.goBack()} />
+
             <Text style={styles.header}>Vehicle Additional Details</Text>
 
-            {/* <Text style={styles.title}>Enter Vehicle Number:</Text> */}
-            {/* <TextInput
-                style={styles.input}
-                placeholder="Vehicle Number"
-                value={vehicleNumber}
-                onChangeText={setVehicleNumber}
-                editable={false}
-            /> */}
-
-            {/* <Text style={styles.title}>Enter Vehicle Type:</Text> */}
-            {/* <TextInput
-                style={styles.input}
-                placeholder="Vehicle Type"
-                value={vehicleType}
-                onChangeText={setVehicleType}
-                editable={false}
-            /> */}
-
-            
-            {/* <View style={styles.card}>
-                <Text style={styles.cardTitle}>Vehicle Number</Text>
-                <Text style={styles.cardValue}>{vehicleNumber}</Text>
-            </View>
-
-            {/* Vehicle Type Card */}
-            {/* <View style={styles.card}>
-                <Text style={styles.cardTitle}>Vehicle Type</Text>
-                <Text style={styles.cardValue}>{vehicleType}</Text>
-            </View>  */}
-
-
             <View style={styles.card}>
-                <Image source={{bike}} style={styles.icon} />
-                <View style={styles.info}>
-                    <Text style={styles.cardTitle}>Vehicle Number</Text>
-                    <Text style={styles.cardValue}>{vehicleNumber}</Text>
+                <View style={styles.iconWrapper}>
+                    {(vehicleType === 'Car') && (
+                        <Image source={car} style={styles.icon} />
+                    )}
+                    {(vehicleType === 'Bike') && (
+                        <Image source={bike} style={styles.icon} />
+                    )}
+                    {(vehicleType === 'Mechanic') && (
+                        <Image source={repair} style={styles.icon} />
+                    )}
+                </View>
+                <View style={styles.textWrapper}>
+                    <Text style={styles.title}>{vehicleNumber}</Text>
+                    {(vehicleType === 'Car' || vehicleType === 'Bike') && (
+                        <Text style={styles.subtitle}>{vehicleType}</Text>
+                    )}
                 </View>
             </View>
 
-            {/* Vehicle Type Card */}
-            <View style={styles.card}>
-                <Image source={{bike}} style={styles.icon} />
-                <View style={styles.info}>
-                    <Text style={styles.cardTitle}>Vehicle Type</Text>
-                    <Text style={styles.cardValue}>{vehicleType}</Text>
-                </View>
-            </View>
-
-
-            {/* <Text style={styles.title}>Enter Brand:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Brand"
@@ -90,7 +75,6 @@ const VehicleDetails = ({ route, navigation }) => {
                 onChangeText={setBrand}
             />
 
-            {/* <Text style={styles.title}>Enter model:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Model"
@@ -98,7 +82,6 @@ const VehicleDetails = ({ route, navigation }) => {
                 onChangeText={setModel}
             />
 
-            {/* <Text style={styles.title}>Enter Make:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Make"
@@ -106,7 +89,6 @@ const VehicleDetails = ({ route, navigation }) => {
                 onChangeText={setYear}
             />
 
-            {/* <Text style={styles.title}>Enter Chasis No:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Chasis No."
@@ -114,7 +96,6 @@ const VehicleDetails = ({ route, navigation }) => {
                 onChangeText={setChasis}
             />
 
-            {/* <Text style={styles.title}>Enter Engine No:</Text> */}
             <TextInput
                 style={styles.input}
                 placeholder="Engine No."
@@ -139,7 +120,16 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF', // White background
+        // backgroundColor: '#FFFFFF', // White background
+    },
+    backButton: {
+        position: 'absolute',
+        top: 70, // Adjust as needed
+        left: 16, // Adjust as needed
+    },
+    backIcon: {
+        width: 30, // Adjust as needed
+        height: 30, // Adjust as needed
     },
     title: {
         fontSize: 18,
@@ -154,52 +144,72 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#FF9933', // Saffron color
-    },
-    card: {
-        flexDirection: 'row',
-        backgroundColor: '#fff',
-        padding: 10,
-        marginVertical: 8,
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        alignItems: 'center',
-    },
-    icon: {
-        width: 40,
-        height: 40,
-        marginRight: 10,
-    },
-    info: {
-        flex: 1,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: '500',
-        color: '#444',
-    },
-    cardValue: {
-        fontSize: 16,
-        color: '#555',
+        color: 'balck', // Saffron color
     },
     input: {
         width: '90%',
-        height: 50,
+        height: 60,
         borderColor: 'gray',
         borderWidth: 1,
-        borderRadius: 5,
+        borderRadius: 10,
         paddingHorizontal: 10,
         marginBottom: 20,
         fontSize: 16,
     },
     saveButton: {
-        backgroundColor: '#FF9933', // Saffron background
-        padding: 15,
-        borderRadius: 5,
+        backgroundColor: '#007bff', // Primary color for the button
+        padding: 15, // Padding inside the button
+        borderRadius: 10, // Rounded corners
+        alignItems: 'center', // Center the text inside the button
+        justifyContent: 'center', // Center vertically
+        marginTop: 20, // Margin at the top,
+        width: '90%',
+        height: 50
     },
     buttonText: {
-        color: '#FFFFFF', // White text
+        color: 'white', // Text color
+        fontSize: 16, // Font size
+        fontWeight: 'bold', // Font weight
+    },
+    card: {
+        flexDirection: 'row',
+        backgroundColor: '#FfFfFf',
+        borderRadius: 10,
+        padding: 16,
+        margin: 16,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        width: '90%',
+        height: 70,
+        bottom:10
+    },
+    iconWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'transparent',
+    },
+    icon: {
+        width: 50,
+        height: 60,
+        backgroundColor: 'transparent',
+    },
+    textWrapper: {
+        marginLeft: 16,
+    },
+    title: {
+        fontSize: 18,
         fontWeight: 'bold',
+        color: '#000',
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#6D6D6D',
     },
 });

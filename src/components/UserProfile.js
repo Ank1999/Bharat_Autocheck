@@ -1,16 +1,30 @@
 import React from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import car from "../../assets/Car.jpg";
 import profile from "../../assets/Profile.png";
 import forwardArrow from "../../assets/forwardArrow.png";
 import invite from "../../assets/invite.png";
+import AppHeader from "../Global/AppHeader";
 
-export default function UserProfile(props) {
+export default function UserProfile({ navigation }) {
+
+  const handleLogOut = () => {
+
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
+
+      <AppHeader
+        showBackButton={true}
+        showText={true} // Display text alongside the back button
+        title="Profile"
+        onBackButtonPress={() => navigation.goBack()}
+      />
+
+      {/* <View style={styles.headerContainer}>
         <Text style={styles.header}>Profile</Text>
-      </View>
+      </View> */}
       <Image resizeMode="contain" source={profile} style={styles.profileImage} />
 
       <View style={styles.rowContainer}>
@@ -53,6 +67,12 @@ export default function UserProfile(props) {
           style={styles.arrowLogo}
         />
       </View>
+
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleLogOut}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Log out</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -64,11 +84,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     margin: 0,
     padding: 10,
-  },
-  headerContainer: {
-    position: 'absolute',
-    top: 60,
-    left: 40,
   },
   header: {
     fontSize: 24,
@@ -82,13 +97,13 @@ const styles = StyleSheet.create({
     height: 200, // Adjust the height as needed
   },
   rowContainer: {
-    borderRadius: 15,
+    borderRadius: 10,
     backgroundColor: "#FFF",
     alignSelf: "stretch",
     marginTop: 30,
     alignItems: "center",
     flexDirection: "row",
-    height:65,
+    height: 65,
     padding: 10, // Adjust the padding as needed
     shadowColor: "rgba(0, 0, 0, 0.25)",
     shadowOffset: {
@@ -108,11 +123,11 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28, // Adjust the height as needed
   },
-  arrowLogo:{
+  arrowLogo: {
     width: 25,
     height: 25,
-    position:'absolute',
-    left:'96%',
+    position: 'absolute',
+    left: '96%',
   },
   textContainer: {
     flex: 1,
@@ -125,7 +140,34 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins", // Adjust the font family as needed
     lineHeight: 24, // Adjust the line height as needed
   },
-  
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    top: 40
+  },
+  button: {
+    width: '100%',
+    height: 60,
+    // backgroundColor: 'white',
+    borderWidth: 1, // Add a gray border
+    borderColor: 'lightgray', // Gray border color
+    borderRadius: 10, // Border radius for rounded corners
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: 'gray', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5, // Shadow opacity
+    shadowRadius: 2, // Shadow radius
+    elevation: 5, // Elevation for Android shadow
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+  },
 });
 
 

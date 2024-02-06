@@ -39,20 +39,18 @@ const AppButton = ({ title, page, navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        position: 'absolute',
-        bottom: -220,
         left: 0,
         right: 0,
         backgroundColor: 'transparent',
     },
     summaryContainer: {
-        height: 90,
+        height: 100,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#FFF',
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
+        backgroundColor: '#F0F0F0',
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -67,11 +65,10 @@ const styles = StyleSheet.create({
     itemCountText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
-        // backgroundColor: '#F0F0F0',
         borderRadius: 20,
         paddingVertical: 8,
         paddingHorizontal: 15,
+
     },
     checkoutButton: {
         backgroundColor: '#34C759',
@@ -88,7 +85,8 @@ const styles = StyleSheet.create({
         elevation: 6,
         fontWeight: 500,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        bottom:5
     },
     checkoutButtonText: {
         fontSize: 18,
@@ -96,11 +94,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     buttonContainer: {
-        backgroundColor: '#FFFFFF', // Replace with the color of your button background
+        // backgroundColor: '#FFFFFF', // Replace with the color of your button background
         padding: 5, // Replace with your desired padding
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
+        bottom:5
     },
     icon: {
         width: 18, // Replace with the width of your icon

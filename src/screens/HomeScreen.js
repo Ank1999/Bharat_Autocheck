@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, Image, TouchableWithoutFeedback } from 'react-native';
-import pLogo from '../../assets/logo1.png'
-import car from '../../assets/Car.jpg'
-import bike from '../../assets/Bike.png'
 import AppHeader from '../Global/AppHeader';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import BottomTab from '../Navigation/BottomTabNavigation';
 
-
+const Tab = createBottomTabNavigator();
 
 export default function ({ navigation }) {
     const [searchText, setSearchText] = useState('');
@@ -36,8 +35,6 @@ export default function ({ navigation }) {
     };
 
     const handleProfileClick = () => {
-        // Add your logic here
-        // For example, you might navigate to a profile screen or open a menu
         console.log(' button clicked');
         navigation.navigate('UserProfile');
 
@@ -46,7 +43,7 @@ export default function ({ navigation }) {
     return (
         <View style={styles.container}>
             {/* <header handleProfileClick={handleProfileClick} handleProfileClick={handleProfileClick} /> */}
-            <AppHeader handleProfileClick={handleProfileClick} />
+            <AppHeader title="Welcome, Ank" onProfileClick={handleProfileClick}  />
 
             {/* Button Container */}
             <View style={styles.buttonContainer}>
@@ -67,7 +64,7 @@ export default function ({ navigation }) {
                     <Text style={styles.header}>Please Enter {selectedOption} Details.</Text>
 
                     {/* Radio Buttons */}
-                    <View style={styles.radioButtonContainer}>
+                    {/* <View style={styles.radioButtonContainer}>
 
                         <View style={styles.radioButtonWithText}>
                             <TouchableOpacity
@@ -84,7 +81,7 @@ export default function ({ navigation }) {
                             <TouchableOpacity
                                 style={[styles.radioButton, radioSelection === 'New' && styles.selectedRadioButton,]}
                                 onPress={() => handleRadioSelect('New')}>
-                                {/* You can place the radio button icon here if needed */}
+                              
                             </TouchableOpacity>
                             <Text
                                 style={[styles.radioText, radioSelection === 'New' && styles.selectedRadioText,]}>
@@ -92,7 +89,7 @@ export default function ({ navigation }) {
                             </Text>
                         </View>
 
-                    </View>
+                    </View> */}
                     <TextInput
                         style={styles.searchBox}
                         placeholder={`Enter your ${selectedOption.toLowerCase()} number`}
@@ -105,7 +102,7 @@ export default function ({ navigation }) {
                     {isInputClicked && (
                         <View>
                             <TextInput style={styles.searchBox} placeholder="User Name" />
-                            <TextInput style={styles.searchBox} placeholder="User gmail" />
+                            {/* <TextInput style={styles.searchBox} placeholder="User gmail" /> */}
                             <TextInput style={styles.searchBox} placeholder="User Contact Number" />
                             {/* Add more TextInput components as needed */}
                         </View>
@@ -116,8 +113,9 @@ export default function ({ navigation }) {
                         <Text style={styles.submitButtonText}>Submit</Text>
                     </TouchableOpacity>
                 </View>
-            )}
 
+            )}
+            {/* <BottomTab /> */}
         </View>
     );
 }
@@ -146,7 +144,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ddd', // Example button color
         borderRadius: 15,
         width: '30%',
-        height: 45,
+        height: 50,
         textAlign: 'center',
         justifyContent: 'center',
         alignItems: 'center'
@@ -177,13 +175,13 @@ const styles = StyleSheet.create({
     },
     selectedRadioButton: {
         borderColor: '#007AFF', // Border color for selected state
-        backgroundColor:'red'
+        backgroundColor: 'red'
     },
     radioText: {
         fontSize: 16,
         color: '#333', // Text color for unselected state
-        marginLeft:10,
-        fontWeight:'bold'
+        marginLeft: 10,
+        fontWeight: 'bold'
     },
     selectedRadioText: {
         color: '#007AFF', // Text color for selected state
@@ -194,7 +192,7 @@ const styles = StyleSheet.create({
     },
     searchBox: {
         minWidth: '100%',
-        height: 50,
+        height: 60,
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 10,
@@ -219,5 +217,15 @@ const styles = StyleSheet.create({
         color: 'white', // Text color
         fontSize: 16, // Font size
         fontWeight: 'bold', // Font weight
+    },
+    tabBar: {
+        backgroundColor: '#fff', // Background color of the tab bar
+        borderTopColor: 'transparent', // Border top color
+        height: 60, // Height of the tab bar
+        margin:50
+    },
+    tabBarLabel: {
+        fontSize: 12, // Font size of the tab label
+        marginBottom: 5, // Margin bottom for the label
     },
 });

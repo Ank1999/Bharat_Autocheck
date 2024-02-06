@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; // Recommended for handling view insets
 import AppButton from '../Global/AppButton';
+import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import AppHeader from '../Global/AppHeader'
+
 
 const TimeSlotButton = ({ slot, selected, onSelect }) => (
     <TouchableOpacity
@@ -56,8 +59,19 @@ export default function EstimationDetails({ navigation }) {
         setSelectedDate(date);
     };
 
+    const handleBack = () => {
+        navigation.goBack();
+    }
+
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
+            <View style={styles.backButton}>
+                <AppHeader showBackButton={true}
+                    onBackButtonPress={() => navigation.goBack()} />
+            </View>
+
+
+
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -86,7 +100,7 @@ export default function EstimationDetails({ navigation }) {
             </View>
 
 
-            <View style={{ flex: 1 }}>
+            <View style={styles.appButton}>
                 <AppButton
                     title="Book"
                     page='Login'
@@ -94,23 +108,27 @@ export default function EstimationDetails({ navigation }) {
                 />
             </View>
 
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
-        // maxHeight:660,
-        backgroundColor: '#FFF',
-        // marginTop: '15%'
+        flex: 1,
+    },
+    backButton: {
+        position: 'relative',
+        bottom: 90, // Adjust as needed
+        zIndex:1,
+        marginTop:90
     },
     datesScrollView: {
         flexGrow: 0,
         flexDirection: 'row',
         paddingVertical: 20,
         paddingHorizontal: 16,
-        backgroundColor: '#FFF', // Adjust if you have a different background color
+        // backgroundColor: '#FFF', // Adjust if you have a different background color
+        height:100,
     },
     dateMonthYear: {
         fontSize: 14,
@@ -119,6 +137,7 @@ const styles = StyleSheet.create({
     },
     selectedDateText: {
         color: '#FFF',
+        
     },
     dateItem: {
         width: 60,
@@ -127,7 +146,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F0F0F0',
+        backgroundColor: '#fff',
+        top:10
     },
     selectedDateItem: {
         backgroundColor: '#34C759',
@@ -159,16 +179,19 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginLeft: 16,
         marginBottom: 16,
+        bottom:60
     },
     timeSlotsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
+        bottom:60
+
     },
     timeSlotButton: {
         width: '46%',
-        backgroundColor: '#E8E8E8',
+        backgroundColor: '#fff',
         borderRadius: 18,
         paddingVertical: 20,
         alignItems: 'center',
@@ -207,4 +230,7 @@ const styles = StyleSheet.create({
         fontSize: 16, // Font size
         fontWeight: 'bold', // Font weight
     },
+    appButton:{
+        flex:1,
+    }
 });

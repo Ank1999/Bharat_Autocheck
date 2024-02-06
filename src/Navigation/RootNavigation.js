@@ -63,7 +63,7 @@ export default function RootNavigation() {
                         }}
                     />
                     <Stack.Screen 
-                        name="Main" 
+                        name="BottomTab" 
                         component={BottomTabNavigator}
                         options={{ headerShown: false }}
                     />

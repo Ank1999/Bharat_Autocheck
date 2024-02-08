@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import profile from "../../assets/Profile.png";
+import AuthService from '../../services/AuthService';
 
 
 export default function Login() {
@@ -13,9 +12,14 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = () => {
-    // navigation.navigate('HomeScreen');
-    navigation.navigate('BottomTab');
+
+  const handleSignIn = async () => {
+    const success = await AuthService.login(email, password);
+    if (success) {
+      navigation.navigate('BottomTab');
+    } else {
+      Alert.alert('Login Failed', 'Please check your credentials');
+    }
   };
 
   const handleRegistration = () => {

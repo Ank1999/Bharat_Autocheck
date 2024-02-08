@@ -11,12 +11,17 @@ export default function Registration() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-
-
-    const handleSignUp = () => {
-        navigation.navigate('Login');
+    
+    const handleSignUp = async () => {
+        // Validation and other logic...
+        
+        try {
+            await AuthService.register(email, password);
+            navigation.navigate('Login');
+        } catch (error) {
+            alert('Failed to register');
+        }
     };
-
 
     return (
         // <ScrollView contentContainerStyle={styles.containerS}>

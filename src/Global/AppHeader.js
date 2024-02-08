@@ -12,7 +12,7 @@ const AppHeader = ({ title, showBackButton, showText, onBackButtonPress, onProfi
     return (
         <View style={styles.headerBar}>
         {showBackButton ? (
-          <TouchableOpacity onPress={showText ? onBackButtonPress : null}>
+          <TouchableOpacity onPress={onBackButtonPress}>
             {showText ? (
               <View style={styles.headerContent}>
                 <FontAwesomeIcon icon={faArrowLeft} size={22} style={{ marginRight: 15 }} />

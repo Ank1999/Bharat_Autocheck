@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         top: 10
     },
     tabBarActiveColor: {
-        color: 'cyan', // Color for active tab icons
+        color: '#007bff', // Color for active tab icons
     },
     tabBarInactiveColor: {
         color: 'black', // Color for inactive tab icons

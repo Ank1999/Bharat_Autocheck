@@ -69,9 +69,6 @@ export default function EstimationDetails({ navigation }) {
                 <AppHeader showBackButton={true}
                     onBackButtonPress={() => navigation.goBack()} />
             </View>
-
-
-
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}

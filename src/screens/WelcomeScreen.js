@@ -22,6 +22,8 @@ export default function WelcomeScreen({ navigation }) {
         // Navigate to the Home screen after the animation completes
         const navigateToHome = () => {
             navigation.navigate('Login');
+            // navigation.navigate('HomeScreen');
+
         };
 
         const timeout = setTimeout(navigateToHome, 100 * 3);

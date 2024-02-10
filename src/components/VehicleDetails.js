@@ -32,9 +32,7 @@ const VehicleDetails = ({ route, navigation }) => {
         navigation.navigate('EstimationDetails');
 
     };
-    const handleBack = () => {
-        navigation.goBack();
-    }
+
 
     return (
         <View style={styles.container}>

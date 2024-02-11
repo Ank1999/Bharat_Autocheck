@@ -4,10 +4,10 @@
     "slug": "Bharat_Autocheck",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/new.jpg",
+    "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/new.jpg",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,12 +22,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/new.jpg",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.vahanessentials.reveal"
     },
     "web": {
-      "favicon": "./assets/new.jpg"
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6c401e6a-ef3d-457b-9a3f-3163a0dac036"
+      }
     }
   }
 }

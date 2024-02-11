@@ -15,11 +15,11 @@ export default function Login() {
 
   const handleSignIn = async () => {
     const success = await AuthService.login(email, password);
-    // if (success) {
+    if (success) {
       navigation.navigate('BottomTab');
-    // } else {
-    //   Alert.alert('Login Failed', 'Please check your credentials');
-    // }
+    } else {
+      Alert.alert('Login Failed', 'Please check your credentials');
+    }
   };
 
   const handleRegistration = () => {

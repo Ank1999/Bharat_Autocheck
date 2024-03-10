@@ -1,0 +1,201 @@
+import React from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+    Image,
+    Dimensions
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const windowWidth = Dimensions.get('window').width;
+
+const CartItem = ({ item }) => {
+    return (
+        <View style={styles.cartItem}>
+            <View style={styles.itemImageContainer}>
+                <Image source={{ uri: item.image }} style={styles.itemImage} />
+            </View>
+            <View style={styles.itemDetails}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemPrice}>€{item.price}</Text>
+            </View>
+        </View>
+    );
+};
+
+const VehicleCart = ({ cartItems = [] }) => {
+    const emptyCartImage = require('../../assets/cart.png'); // Replace with your empty cart image path
+
+    const renderFooter = () => {
+        if (cartItems.length === 0) {
+            return null; // Don't render anything if cart is empty
+        }
+        const subtotal = cartItems.reduce((total, item) => total + item.price, 0);
+        const shipping = subtotal > 0 ? 'Free' : '€0.00';
+        const total = subtotal;
+
+        return (
+            <View style={styles.footer}>
+                <View style={styles.summaryLine}>
+                    <Text style={styles.summaryText}>Subtotal</Text>
+                    <Text style={styles.summaryPrice}>€{subtotal.toFixed(2)}</Text>
+                </View>
+                <View style={styles.summaryLine}>
+                    <Text style={styles.summaryText}>Shipping</Text>
+                    <Text style={styles.summaryPrice}>{shipping}</Text>
+                </View>
+                <View style={styles.totalLine}>
+                    <Text style={styles.totalText}>Total</Text>
+                    <Text style={styles.totalPrice}>€{total.toFixed(2)}</Text>
+                </View>
+            </View>
+        );
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <FlatList
+                data={cartItems}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => <CartItem item={item} />}
+                ListEmptyComponent={
+                    <View style={styles.emptyContainer}>
+                        <Image source={emptyCartImage} style={styles.emptyImage} />
+                        <Text style={styles.emptyText}>Your cart is empty</Text>
+                    </View>
+                }
+                ListFooterComponent={renderFooter}
+                contentContainerStyle={cartItems.length === 0 ? styles.emptyListContainer : styles.listContainer}
+            />
+            <TouchableOpacity
+                style={[styles.checkoutButton, cartItems.length === 0 && styles.disabledCheckoutButton]}
+                disabled={cartItems.length === 0}
+                onPress={() => {
+                    if (cartItems.length > 0) {
+                        navigation.navigate('Checkout');
+                    }
+                }}>
+                <Text style={styles.checkoutButtonText}>Checkout</Text>
+            </TouchableOpacity>
+        </SafeAreaView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
+    cartItem: {
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1,
+        elevation: 3,
+    },
+    itemImageContainer: {
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 10,
+        overflow: 'hidden',
+    },
+    itemImage: {
+        width: 60,
+        height: 60,
+    },
+    itemDetails: {
+        flex: 1,
+        marginLeft: 16,
+        justifyContent: 'center',
+    },
+    itemTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: '#333',
+    },
+    itemPrice: {
+        fontSize: 16,
+        color: '#666',
+    },
+    // Footer styles
+    footer: {
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+    },
+    summaryLine: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 8,
+    },
+    summaryText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    summaryPrice: {
+        fontSize: 16,
+        color: '#333',
+    },
+    totalLine: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+    },
+    totalText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    totalPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,    
+    },
+    emptyImage: {
+        width: windowWidth * 0.7, 
+        height: windowWidth * 0.7,
+        resizeMode: 'contain',
+    },
+    emptyText: {
+        fontSize: 20,
+        color: '#aaa',
+        marginTop: 16,
+    },
+    checkoutButton: {
+        backgroundColor: '#4CAF50', // active button color
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10,
+        marginHorizontal: 16,
+    },
+    disabledCheckoutButton: {
+        backgroundColor: '#ccc', // disabled button color
+    },
+    checkoutButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+});
+
+export default VehicleCart;

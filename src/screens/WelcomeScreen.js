@@ -1,9 +1,6 @@
 import { StyleSheet, Text, View, Image, Animated, Easing } from 'react-native'
 import pLogo from '../../assets/logo1.png'
 import React, { useEffect, useRef } from 'react';
-import HomeScreen from '../screens/HomeScreen';
-
-
 
 
 export default function WelcomeScreen({ navigation }) {
@@ -21,7 +18,7 @@ export default function WelcomeScreen({ navigation }) {
 
         // Navigate to the Home screen after the animation completes
         const navigateToHome = () => {
-            navigation.navigate('Login');
+            navigation.navigate('SplashScreen');
             // navigation.navigate('HomeScreen');
 
         };

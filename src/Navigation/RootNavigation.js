@@ -6,13 +6,19 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import VehicleDetails from '../components/VehicleDetails';
-import EstimationDetails from '../components/EstimationDetails';
 import Login from '../components/Login';
 import UserProfile from '../components/UserProfile';
 import BottomTabNavigator from './BottomTabNavigation';
 import PaymentMethod from '../components/PaymentMethod';
 import Registration from '../components/Registration';
 import Brand from '../Global/Brand';
+import SplashScreen from '../screens/SplashScreen';
+import VehicleCart from '../components/VehicleCart';
+import DetailScreen from '../components/DetailsScreen';
+import CategoryScreen from '../components/CategoryScreen';
+import PaymentScreen from '../components/PaymentScreen';
+import DateTimeScreen from '../components/DateTimeScreen';
+import LoginScreen from '../components/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,7 +44,7 @@ export default function RootNavigation() {
                             headerShown: false
                         }}
                     />
-                    <Stack.Screen name="EstimationDetails" component={EstimationDetails}
+                    <Stack.Screen name="DateTimeScreen" component={DateTimeScreen}
                         options={{
                             headerShown: false
                         }}
@@ -48,7 +54,12 @@ export default function RootNavigation() {
                             headerShown: false
                         }}
                     />
-                     <Stack.Screen name="Registration" component={Registration}
+                    <Stack.Screen name="LoginScreen" component={LoginScreen}
+                        options={{
+                            headerShown: false
+                        }}
+                    />
+                    <Stack.Screen name="Registration" component={Registration}
                         options={{
                             headerShown: false
                         }}
@@ -68,9 +79,34 @@ export default function RootNavigation() {
                             headerShown: false
                         }}
                     />
-                    <Stack.Screen 
-                        name="BottomTab" 
+                    <Stack.Screen
+                        name="BottomTab"
                         component={BottomTabNavigator}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="SplashScreen"
+                        component={SplashScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="VehicleCart"
+                        component={VehicleCart}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="DetailScreen"
+                        component={DetailScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="CategoryScreen"
+                        component={CategoryScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="PaymentScreen"
+                        component={PaymentScreen}
                         options={{ headerShown: false }}
                     />
                 </Stack.Navigator>

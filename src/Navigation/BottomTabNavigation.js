@@ -3,8 +3,10 @@ import HomeScreen from '../screens/HomeScreen';
 import UserProfile from '../components/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { StyleSheet } from 'react-native';
+import VehicleCart from '../components/VehicleCart';
+import DetailScreen from '../components/DetailsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,7 +24,7 @@ function BottomTabNavigator() {
                 tabBarStyle: [
                     {
                         display: 'flex', // Display the tab bar container as flex
-                        backgroundColor:'#f0f0f0'
+                        backgroundColor: '#f0f0f0'
                     },
                     null,
                 ],
@@ -46,6 +48,27 @@ function BottomTabNavigator() {
                     tabBarLabel: 'Home', // Tab label for the "Home" screen
                 }}
             />
+
+            <Tab.Screen
+                name="Cart"
+                component={VehicleCart}
+                options={{
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <FontAwesomeIcon
+                            icon={faCartShopping}
+                            size={22}
+                            style={[
+                                styles.tabBarIcon,
+                                focused ? styles.tabBarActiveColor : styles.tabBarInactiveColor,
+                            ]}
+                        />
+                    ),
+                    tabBarLabel: 'Cart', // Tab label for the "Profile" screen
+
+                }}
+            />
+
             <Tab.Screen
                 name="Profile"
                 component={UserProfile}
@@ -65,6 +88,7 @@ function BottomTabNavigator() {
 
                 }}
             />
+
         </Tab.Navigator>
 
     );

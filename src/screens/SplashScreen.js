@@ -21,7 +21,7 @@ const SplashScreen = ({navigation}) => {
     }
 
     const handleButton = () => {
-        navigation.navigate('Login');
+        navigation.navigate('BottomTab');
     }
 
     return (
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     dotsContainer: {
         flexDirection: 'row',
         position: 'absolute',
-        bottom: 190, // Adjust this value as needed to position the dots
+        bottom: 170, // Adjust this value as needed to position the dots
         alignSelf: 'center',
     },
     dot: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
    loginContainer: {
-    bottom: 60, 
+    bottom: 80, 
   },
   loginText: {
     fontSize: 17, 

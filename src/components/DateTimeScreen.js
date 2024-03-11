@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // Recommended for handling view insets
-import AppButton from '../Global/AppButton';
-import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import AppHeader from '../Global/AppHeader'
+import { View, Text, TextInput, Button, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 const TimeSlotButton = ({ slot, selected, onSelect }) => (
@@ -35,7 +31,7 @@ const DateItem = ({ date, isSelected, onSelect }) => {
 };
 
 
-export default function DateTimeScreen({ navigation, onClose }) {
+export default function DateTimeScreen({ navigation, onClose, visible }) {
 
     const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -64,59 +60,86 @@ export default function DateTimeScreen({ navigation, onClose }) {
     }
 
     return (
-        <View style={styles.container}>
-            {/* <View style={styles.backButton}>
-                <AppHeader showBackButton={true}
-                    onBackButtonPress={() => navigation.goBack()} />
-            </View> */}
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Icon name="close" size={24} color="#000" />
-            </TouchableOpacity>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.datesScrollView}
+        <Modal
+            visible={visible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={onClose}
+        >
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.container}
             >
-                {dateArray.map((date, index) => (
-                    <DateItem
-                        key={index}
-                        date={date}
-                        isSelected={date.toDateString() === selectedDate.toDateString()}
-                        onSelect={handleSelectDate}
-                    />
-                ))}
-            </ScrollView>
-            {/* The rest of your time selection UI goes here */}
-            <Text style={styles.selectTimeText}>Select time</Text>
-            <ScrollView>
-                <View style={styles.timeSlotsContainer}>
-                    {times.map((time, index) => (
-                        <TimeSlotButton
-                            key={index}
-                            slot={time}
-                            selected={selectedTime === time}
-                            onSelect={setSelectedTime}
-                        />
-                    ))}
-                </View>
-            </ScrollView>
+                <TouchableWithoutFeedback onPress={onClose}>
+                    <View style={styles.modalContainer}>
+                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                            <View style={styles.modalContent}>
 
-            {/* <View style={styles.appButton}>
-                <AppButton
-                    title="Book"
-                    page='Login'
-                    navigation={navigation}
-                />
-            </View> */}
+                                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                                    <Icon name="close" size={24} color="#000" />
+                                </TouchableOpacity>
+                                <Text style={styles.selectTimeText}>Select Date</Text>
 
-        </View>
-    );
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={styles.datesScrollView}
+                                >
+                                    {dateArray.map((date, index) => (
+                                        <DateItem
+                                            key={index}
+                                            date={date}
+                                            isSelected={date.toDateString() === selectedDate.toDateString()}
+                                            onSelect={handleSelectDate}
+                                        />
+                                    ))}
+                                </ScrollView>
+                                <Text style={styles.selectTimeText}>Select time</Text>
+                                <ScrollView>
+                                    <View style={styles.timeSlotsContainer}>
+                                        {times.map((time, index) => (
+                                            <TimeSlotButton
+                                                key={index}
+                                                slot={time}
+                                                selected={selectedTime === time}
+                                                onSelect={setSelectedTime}
+                                            />
+                                        ))}
+                                    </View>
+
+                                </ScrollView>
+                                <TouchableOpacity style={styles.buyNowButton}>
+                                    <Text style={styles.buyNowText}>Continue</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
+                    </View>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </Modal>
+    )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'transparent'
+    },
+    modalContainer: {
+        flex: 1,
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        justifyContent: 'flex-end',
+        // alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
     },
     backButton: {
         position: 'relative',
@@ -189,10 +212,11 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
     selectTimeText: {
-        fontSize: 18,
-        marginLeft: 16,
-        marginBottom: 16,
-        bottom: 60
+        fontSize: 20,
+        margin: 15,
+        top: 10,
+        alignSelf: 'center',
+        fontWeight: '500'
     },
     timeSlotsContainer: {
         flexDirection: 'row',
@@ -245,5 +269,17 @@ const styles = StyleSheet.create({
     },
     appButton: {
         flex: 1,
-    }
+    },
+    buyNowButton: {
+        backgroundColor: '#34C759',
+        paddingVertical: 15,
+        borderRadius: 15,
+        alignSelf: 'flex-end',
+        padding:20,
+        bottom:30
+      },
+      buyNowText: {
+        fontSize: 18,
+        color: '#FFF',
+      },
 });

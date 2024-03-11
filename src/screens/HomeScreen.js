@@ -44,9 +44,19 @@ export default function ({ navigation }) {
                             <Image source={bg} style={styles.cardImage} />
                             <View style={styles.cardDetail}>
                                 <Text style={styles.cardTitle}>Car</Text>
-                                <Text style={styles.cardSubtitle}>Used</Text>
+                                <Text style={styles.cardSubtitle}>$100</Text>
                             </View>
-                            <TouchableOpacity style={styles.addButton}>
+                            <TouchableOpacity
+                                style={styles.addButton}
+                                onPress={() => navigation.navigate('VehicleCart', {
+                                    cartItems: [{
+                                        id: '1', // Use a unique ID for each item
+                                        title: 'Car',
+                                        price: 100,
+                                        image: Image.resolveAssetSource(bg).uri // Convert local image to URI
+                                    }]
+                                })}
+                            >
                                 <Text style={styles.addButtonText}>Add</Text>
                             </TouchableOpacity>
                         </TouchableOpacity>

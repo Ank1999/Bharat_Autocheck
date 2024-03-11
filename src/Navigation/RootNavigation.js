@@ -19,6 +19,7 @@ import CategoryScreen from '../components/CategoryScreen';
 import PaymentScreen from '../components/PaymentScreen';
 import DateTimeScreen from '../components/DateTimeScreen';
 import LoginScreen from '../components/LoginScreen';
+import LocationScreen from '../components/LocationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -107,6 +108,11 @@ export default function RootNavigation() {
                     <Stack.Screen
                         name="PaymentScreen"
                         component={PaymentScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="LocationScreen"
+                        component={LocationScreen}
                         options={{ headerShown: false }}
                     />
                 </Stack.Navigator>

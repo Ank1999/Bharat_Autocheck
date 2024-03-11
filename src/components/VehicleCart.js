@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -9,10 +9,11 @@ import {
     Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as WebBrowser from 'expo-web-browser';
 
 const windowWidth = Dimensions.get('window').width;
 
-const CartItem = ({ item }) => {
+const CartItem = ({ item, onDelete }) => {
     return (
         <View style={styles.cartItem}>
             <View style={styles.itemImageContainer}>
@@ -22,12 +23,37 @@ const CartItem = ({ item }) => {
                 <Text style={styles.itemTitle}>{item.title}</Text>
                 <Text style={styles.itemPrice}>€{item.price}</Text>
             </View>
+            <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => onDelete(item.id)}
+            >
+                <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
-const VehicleCart = ({ cartItems = [] }) => {
+const handlePayment =  async () => {
+    const paymentUrl = 'https://sandbox.cashfree.com/pg/view/upi/dsloo6l.session_DsMCzBzZhoAmVCnJr_Wy8j8w6PstOsT8PdvO-tOUczEsZT1izuV_zSCTJA-1Q_sWyq9hlW4GsVQppU_VIe-X_3SFMF1ESpe3jJNqmDTZyOA3.4ed1c1a1-1b0c-414b-bb3e-53d5fe83e0ad';
+    // await WebBrowser.openBrowserAsync(paymentUrl);
+
+    const result = await WebBrowser.openBrowserAsync(paymentUrl);
+
+    console.log("res ")
+    console.log("res ::: ",result)
+
+}
+
+const VehicleCart = ({ route, navigation }) => {
+
+    const [cartItems, setCartItems] = useState(route.params?.cartItems || []);
+
     const emptyCartImage = require('../../assets/cart.png'); // Replace with your empty cart image path
+
+    const handleDeleteItem = (itemId) => {
+        const updatedCartItems = cartItems.filter(item => item.id !== itemId);
+        setCartItems(updatedCartItems);
+    };
 
     const renderFooter = () => {
         if (cartItems.length === 0) {
@@ -60,7 +86,9 @@ const VehicleCart = ({ cartItems = [] }) => {
             <FlatList
                 data={cartItems}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <CartItem item={item} />}
+                renderItem={({ item }) => (
+                    <CartItem item={item} onDelete={handleDeleteItem} />
+                )}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         <Image source={emptyCartImage} style={styles.emptyImage} />
@@ -73,12 +101,8 @@ const VehicleCart = ({ cartItems = [] }) => {
             <TouchableOpacity
                 style={[styles.checkoutButton, cartItems.length === 0 && styles.disabledCheckoutButton]}
                 disabled={cartItems.length === 0}
-                onPress={() => {
-                    if (cartItems.length > 0) {
-                        navigation.navigate('Checkout');
-                    }
-                }}>
-                <Text style={styles.checkoutButtonText}>Checkout</Text>
+                onPress={handlePayment} >
+                <Text style={styles.checkoutButtonText} >Checkout</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );
@@ -166,10 +190,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,    
+        padding: 20,
     },
     emptyImage: {
-        width: windowWidth * 0.7, 
+        width: windowWidth * 0.7,
         height: windowWidth * 0.7,
         resizeMode: 'contain',
     },
@@ -194,6 +218,17 @@ const styles = StyleSheet.create({
     checkoutButtonText: {
         color: '#fff',
         fontSize: 18,
+        fontWeight: 'bold',
+    },
+    deleteButton: {
+        // Style for the delete button (e.g., padding, backgroundColor)
+        padding: 8,
+        backgroundColor: 'red',
+        borderRadius: 5,
+    },
+    deleteButtonText: {
+        color: '#fff',
+        fontSize: 14,
         fontWeight: 'bold',
     },
 });

@@ -4,7 +4,7 @@ import AuthService from '../../services/AuthService';
 import { Alert } from "react-native";
 
 
-const LoginScreen = ({ visible, onClose }) => {
+const LoginScreen = ({ visible, onClose, navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [otp, setOtp] = useState(new Array(6).fill(''));
@@ -23,12 +23,14 @@ const LoginScreen = ({ visible, onClose }) => {
 
     const verifyOtp = async () => {
         const otpCode = otp.join('');
+        
         try {
             const isVerified = await AuthService.verifyOtp(phoneNumber, otpCode);
             console.log("loginid.......vvvv..", isVerified)
             if (isVerified) {
                 // OTP verified, navigate to the next screen or update state
                 Alert.alert('Login Succesfuuly', 'you are logged in successfully !!');
+                // navigation.navigate('Login');
                 onClose();
             } else {
                 // OTP verification failed, handle accordingly

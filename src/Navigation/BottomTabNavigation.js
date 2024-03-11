@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen from '../components/Login';
 import UserProfile from '../components/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';

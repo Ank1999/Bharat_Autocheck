@@ -21,10 +21,6 @@ export default function UserProfile({ navigation }) {
         title="Profile"
         onBackButtonPress={() => navigation.goBack()}
       />
-
-      {/* <View style={styles.headerContainer}>
-        <Text style={styles.header}>Profile</Text>
-      </View> */}
       <Image resizeMode="contain" source={profile} style={styles.profileImage} />
 
       <View style={styles.rowContainer}>
@@ -79,11 +75,7 @@ export default function UserProfile({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
-    width: "100%",
-    flexDirection: "column",
-    margin: 0,
-    padding: 10,
+    flex:1
   },
   header: {
     fontSize: 24,
@@ -92,7 +84,7 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     alignSelf: "center",
-    marginTop: 100,
+    marginTop: 20,
     width: 183,
     height: 200, // Adjust the height as needed
   },
@@ -137,7 +129,7 @@ const styles = StyleSheet.create({
     color: "#00214E",
     fontSize: 19,
     fontWeight: '600',
-    fontFamily: "Poppins", // Adjust the font family as needed
+    // fontFamily: "Poppins", // Adjust the font family as needed
     lineHeight: 24, // Adjust the line height as needed
   },
   buttonContainer: {

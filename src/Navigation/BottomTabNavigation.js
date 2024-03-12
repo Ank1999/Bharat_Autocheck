@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../components/Login';
+import HomeScreen from '../screens/HomeScreen';
 import UserProfile from '../components/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +7,7 @@ import { faUser, faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { StyleSheet } from 'react-native';
 import VehicleCart from '../components/VehicleCart';
 import DetailScreen from '../components/DetailsScreen';
+import OrderScreen from '../components/OrderScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,13 +19,13 @@ function BottomTabNavigator() {
                 tabBarLabelStyle: {
                     fontSize: 16, // Font size for tab labels
                     fontWeight: 'bold', // Font weight for tab labels
-                    color: 'black', // Color for tab labels
-                    top: 10, // Adjust the position of tab labels
+                    color: 'black', 
+                    top:3
                 },
                 tabBarStyle: [
                     {
                         display: 'flex', // Display the tab bar container as flex
-                        backgroundColor: '#f0f0f0'
+                        // backgroundColor: '#f0f0f0'
                     },
                     null,
                 ],
@@ -50,8 +51,8 @@ function BottomTabNavigator() {
             />
 
             <Tab.Screen
-                name="Cart"
-                component={VehicleCart}
+                name="Orders"
+                component={OrderScreen}
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
@@ -64,7 +65,7 @@ function BottomTabNavigator() {
                             ]}
                         />
                     ),
-                    tabBarLabel: 'Cart', // Tab label for the "Profile" screen
+                    tabBarLabel: 'My Orders', // Tab label for the "Profile" screen
 
                 }}
             />
@@ -84,7 +85,7 @@ function BottomTabNavigator() {
                             ]}
                         />
                     ),
-                    tabBarLabel: 'Profile', // Tab label for the "Profile" screen
+                    tabBarLabel: 'Account', // Tab label for the "Profile" screen
 
                 }}
             />
@@ -97,27 +98,25 @@ function BottomTabNavigator() {
 
 const styles = StyleSheet.create({
     tabContainer: {
-        backgroundColor: 'cyan', // Background color for the tab bar container
-        borderTopWidth: 1, // Add a top border
-        borderTopColor: '#ccc', // Border color
-        paddingBottom: 5, // Add some padding at the bottom
+        backgroundColor: '#4a6fa5', 
+        borderTopWidth: 1, 
+        borderTopColor: '#ccc', 
+       
     },
     tabBarIcon: {
-        marginBottom: -3, // Adjust the icon's position vertically
-        top: 10
+        marginBottom: -3,
+       
     },
     tabBarActiveColor: {
-        color: '#007bff', // Color for active tab icons
+        color: '#007bff', 
     },
     tabBarInactiveColor: {
-        color: 'black', // Color for inactive tab icons
+        color: 'black', 
     },
     tabLabel: {
-        fontSize: 16, // Font size for tab labels
-        fontWeight: 'bold', // Font weight for tab labels
-        color: 'black', // Color for tab labels
-        top: 10
-
+        fontSize: 16, 
+        fontWeight: 'bold', 
+        color: 'black', 
     },
 });
 

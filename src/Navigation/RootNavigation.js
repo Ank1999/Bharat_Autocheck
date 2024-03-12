@@ -6,7 +6,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import VehicleDetails from '../components/VehicleDetails';
-import Login from '../components/Login';
 import UserProfile from '../components/UserProfile';
 import BottomTabNavigator from './BottomTabNavigation';
 import PaymentMethod from '../components/PaymentMethod';
@@ -15,11 +14,12 @@ import Brand from '../Global/Brand';
 import SplashScreen from '../screens/SplashScreen';
 import VehicleCart from '../components/VehicleCart';
 import DetailScreen from '../components/DetailsScreen';
-import CategoryScreen from '../components/CategoryScreen';
 import PaymentScreen from '../components/PaymentScreen';
 import DateTimeScreen from '../components/DateTimeScreen';
 import LoginScreen from '../components/LoginScreen';
 import LocationScreen from '../components/LocationScreen';
+import SearchScreen from '../components/SearchScreen';
+import OrderScreen from '../components/OrderScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,11 +50,6 @@ export default function RootNavigation() {
                             headerShown: false
                         }}
                     />
-                    <Stack.Screen name="Login" component={Login}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
                     <Stack.Screen name="LoginScreen" component={LoginScreen}
                         options={{
                             headerShown: false
@@ -70,7 +65,8 @@ export default function RootNavigation() {
                             headerShown: false
                         }}
                     />
-                    <Stack.Screen name="PaymentMethod" component={PaymentMethod}
+                    <Stack.Screen name="PaymentMethod"
+                        component={PaymentMethod}
                         options={{
                             headerShown: true
                         }}
@@ -101,8 +97,8 @@ export default function RootNavigation() {
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
-                        name="CategoryScreen"
-                        component={CategoryScreen}
+                        name="SearchScreen"
+                        component={SearchScreen}
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
@@ -110,9 +106,9 @@ export default function RootNavigation() {
                         component={PaymentScreen}
                         options={{ headerShown: false }}
                     />
-                    <Stack.Screen
-                        name="LocationScreen"
-                        component={LocationScreen}
+                   <Stack.Screen
+                        name="OrderScreen"
+                        component={OrderScreen}
                         options={{ headerShown: false }}
                     />
                 </Stack.Navigator>

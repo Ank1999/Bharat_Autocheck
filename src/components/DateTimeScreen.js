@@ -1,41 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+    View, Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Modal
+} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
+import * as WebBrowser from 'expo-web-browser';
+import AppButton from '../Global/AppButton';
 
-const TimeSlotButton = ({ slot, selected, onSelect }) => (
-    <TouchableOpacity
-        style={[styles.timeSlotButton, selected && styles.selectedTimeSlotButton]}
-        onPress={() => onSelect(slot)}
-    >
-        <Text style={[styles.timeSlotText, selected && styles.selectedTimeSlotText]}>{slot}</Text>
-    </TouchableOpacity>
-);
+const TimeSlotButton = ({ slot, selected, onSelect }) => {
+    return (
+        <TouchableOpacity
+            style={[styles.timeSlotButton, selected && styles.selectedTimeSlotButton]}
+            onPress={() => onSelect(slot)}>
+            <Text style={[styles.timeSlotText, selected && styles.selectedTimeSlotText]}>{slot}</Text>
+        </TouchableOpacity>
+    );
+};
 
 const DateItem = ({ date, isSelected, onSelect }) => {
-    const day = date.getDate().toString().padStart(2, '0'); // Ensure day is two digits
+    const day = date.getDate().toString().padStart(2, '0');
     const month = date.toLocaleString('default', { month: 'short' });
-    const year = date.getFullYear().toString().slice(-2); // Get the last two digits of the year
-
+    const year = date.getFullYear().toString().slice(-2);
     const dateText = `${month}'${year}`;
-
 
     return (
         <TouchableOpacity
             onPress={() => onSelect(date)}
-            style={[styles.dateItem, isSelected && styles.selectedDateItem]}
-        >
+            style={[styles.dateItem, isSelected && styles.selectedDateItem]}>
             <Text style={[styles.dateDay, isSelected && styles.selectedDateText]}>{day}</Text>
             <Text style={[styles.dateMonthYear, isSelected && styles.selectedDateText]}>{dateText}</Text>
         </TouchableOpacity>
     );
 };
 
-
-export default function DateTimeScreen({ navigation, onClose, visible }) {
-
+export default function DateTimeScreen({ navigation, onClose, visible, price }) {
     const [selectedDate, setSelectedDate] = useState(new Date());
-
-    // Create an array of the next 30 days
     const dateArray = Array.from({ length: 30 }, (_, index) => {
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + index);
@@ -43,81 +41,79 @@ export default function DateTimeScreen({ navigation, onClose, visible }) {
     });
 
     const times = [
-        '09:00-10:00', '10:00-11:00', '11:00-12:00',
-        '12:00-13:00', '14:00-15:00', '15:00-16:00', '16:00-17:00',
-        '17:00-18:00', '18:00-19:00', '19:00-20:00', '20:00-21:00'
-    ]; // Time slots
+        '09:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-13:00', '14:00-15:00',
+        '15:00-16:00', '16:00-17:00', '17:00-18:00', '18:00-19:00', '19:00-20:00', '20:00-21:00'
+    ];
+    const [selectedTime, setSelectedTime] = useState('');
 
-
-    const [selectedTime, setSelectedTime] = useState(null);
-
-    const handleSelectDate = (date) => {
-        setSelectedDate(date);
+    const handleSelectTime = (time) => {
+        console.log('Selected time:', time); // Debugging log
+        setSelectedTime(time);
     };
 
-    const handleBack = () => {
-        navigation.goBack();
-    }
+    const handlePayment = async (date, time, price) => {
+        console.log('Selected time:', time);
+        const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        const paymentUrl = `https://sandbox.cashfree.com/pg/view/upi/your_payment_url?date=${formattedDate}&time=${time}`;
+        console.log(`Initiating payment for ${formattedDate} at ${time} with price ${price}`);
+        const result = await WebBrowser.openBrowserAsync(paymentUrl);
+        console.log("Payment result:", result);
+    };
 
     return (
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={onClose}
-        >
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={styles.container}
-            >
-                <TouchableWithoutFeedback onPress={onClose}>
-                    <View style={styles.modalContainer}>
-                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                            <View style={styles.modalContent}>
+        <Modal visible={visible} transparent={true} animationType="slide" onRequestClose={onClose}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+                <TouchableOpacity activeOpacity={1} onPress={onClose} style={styles.modalContainer}>
+                    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                        <View style={styles.modalContent}>
+                            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                                <Icon name="close" size={24} color="#000" />
+                            </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                                    <Icon name="close" size={24} color="#000" />
-                                </TouchableOpacity>
-                                <Text style={styles.selectTimeText}>Select Date</Text>
+                            <Text style={styles.selectTimeText}>Select Date</Text>
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.datesScrollView}>
+                                {dateArray.map((date, index) => (
+                                    <DateItem
+                                        key={index}
+                                        date={date}
+                                        isSelected={date.toDateString() === selectedDate.toDateString()}
+                                        onSelect={setSelectedDate}
+                                    />
+                                ))}
+                            </ScrollView>
 
-                                <ScrollView
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={styles.datesScrollView}
-                                >
-                                    {dateArray.map((date, index) => (
-                                        <DateItem
+                            <Text style={styles.selectTimeText}>Select Time</Text>
+                            <ScrollView>
+                                <View style={styles.timeSlotsContainer}>
+                                    {times.map((time, index) => (
+                                        <TimeSlotButton
                                             key={index}
-                                            date={date}
-                                            isSelected={date.toDateString() === selectedDate.toDateString()}
-                                            onSelect={handleSelectDate}
+                                            slot={time}
+                                            selected={selectedTime === time}
+
+                                            onSelect={() => handleSelectTime(time)}
                                         />
                                     ))}
-                                </ScrollView>
-                                <Text style={styles.selectTimeText}>Select time</Text>
-                                <ScrollView>
-                                    <View style={styles.timeSlotsContainer}>
-                                        {times.map((time, index) => (
-                                            <TimeSlotButton
-                                                key={index}
-                                                slot={time}
-                                                selected={selectedTime === time}
-                                                onSelect={setSelectedTime}
-                                            />
-                                        ))}
-                                    </View>
+                                </View>
+                            </ScrollView>
 
-                                </ScrollView>
-                                <TouchableOpacity style={styles.buyNowButton}>
-                                    <Text style={styles.buyNowText}>Continue</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </ScrollView>
-                    </View>
-                </TouchableWithoutFeedback>
+                            {/* Conditionally render the AppButton if a time slot is selected */}
+                            {selectedTime && (
+                                <AppButton
+                                    title="Proceed to Pay"
+                                    price={price}
+                                    onPress={() => handlePayment(selectedDate, selectedTime)}
+                                />
+                            )}
+                        </View>
+                    </ScrollView>
+                </TouchableOpacity>
             </KeyboardAvoidingView>
         </Modal>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -126,8 +122,6 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.5)',
     },
     scrollViewContent: {
@@ -162,8 +156,6 @@ const styles = StyleSheet.create({
         flexGrow: 0,
         flexDirection: 'row',
         paddingVertical: 20,
-        paddingHorizontal: 16,
-        // backgroundColor: '#FFF', // Adjust if you have a different background color
         height: 100,
     },
     dateMonthYear: {
@@ -176,8 +168,7 @@ const styles = StyleSheet.create({
 
     },
     dateItem: {
-        width: 60,
-        marginHorizontal: 6,
+        width: 70,
         paddingVertical: 10,
         borderRadius: 10,
         justifyContent: 'center',
@@ -222,8 +213,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        bottom: 60
+        paddingHorizontal: 0,
+        bottom: 70,
 
     },
     timeSlotButton: {
@@ -233,6 +224,10 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         alignItems: 'center',
         marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        borderRadius: 10,
+        
     },
     selectedTimeSlotButton: {
         backgroundColor: '#34C759',
@@ -275,11 +270,11 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 15,
         alignSelf: 'flex-end',
-        padding:20,
-        bottom:30
-      },
-      buyNowText: {
+        padding: 20,
+        bottom: 30
+    },
+    buyNowText: {
         fontSize: 18,
         color: '#FFF',
-      },
+    },
 });

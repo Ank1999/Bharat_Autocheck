@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -6,10 +6,14 @@ import {
     FlatList,
     TouchableOpacity,
     Image,
-    Dimensions
+    Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as WebBrowser from 'expo-web-browser';
+import { useCart } from '../Global/CartContext'; // Ensure the path is correct
+import DateTimeScreen from './DateTimeScreen';
+import AppHeader from '../Global/AppHeader';
+import Toast from 'react-native-toast-message';
+import AppButton from '../Global/AppButton';
+
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -23,51 +27,46 @@ const CartItem = ({ item, onDelete }) => {
                 <Text style={styles.itemTitle}>{item.title}</Text>
                 <Text style={styles.itemPrice}>€{item.price}</Text>
             </View>
-            <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => onDelete(item.id)}
-            >
+            <TouchableOpacity style={styles.deleteButton} onPress={() => onDelete(item.id)}>
                 <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
-const handlePayment =  async () => {
-    const paymentUrl = 'https://sandbox.cashfree.com/pg/view/upi/dsloo6l.session_DsMCzBzZhoAmVCnJr_Wy8j8w6PstOsT8PdvO-tOUczEsZT1izuV_zSCTJA-1Q_sWyq9hlW4GsVQppU_VIe-X_3SFMF1ESpe3jJNqmDTZyOA3.4ed1c1a1-1b0c-414b-bb3e-53d5fe83e0ad';
-    // await WebBrowser.openBrowserAsync(paymentUrl);
-
-    const result = await WebBrowser.openBrowserAsync(paymentUrl);
-
-    console.log("res ")
-    console.log("res ::: ",result)
-
-}
-
 const VehicleCart = ({ route, navigation }) => {
+    const { cartItems, removeFromCart } = useCart();
+    const [showDateModal, setShowDateModal] = useState(false);
 
-    const [cartItems, setCartItems] = useState(route.params?.cartItems || []);
+    const emptyCartImage = require('../../assets/cart.png');
 
-    const emptyCartImage = require('../../assets/cart.png'); // Replace with your empty cart image path
+    const subtotal = cartItems.reduce((total, item) => total + parseFloat(item.price), 0);
+    const shipping = subtotal > 0 ? 'Free' : '€0.00';
+    const total = subtotal;
 
     const handleDeleteItem = (itemId) => {
-        const updatedCartItems = cartItems.filter(item => item.id !== itemId);
-        setCartItems(updatedCartItems);
+        removeFromCart(itemId);
+        Toast.show({
+            type: 'error',
+            position: 'bottom',
+            text1: 'Item removed from cart successfully!',
+            visibilityTime: 4000,
+            autoHide: true,
+            bottomOffset: 50,
+        });
     };
+
 
     const renderFooter = () => {
         if (cartItems.length === 0) {
-            return null; // Don't render anything if cart is empty
+            return null;
         }
-        const subtotal = cartItems.reduce((total, item) => total + item.price, 0);
-        const shipping = subtotal > 0 ? 'Free' : '€0.00';
-        const total = subtotal;
 
         return (
             <View style={styles.footer}>
                 <View style={styles.summaryLine}>
                     <Text style={styles.summaryText}>Subtotal</Text>
-                    <Text style={styles.summaryPrice}>€{subtotal.toFixed(2)}</Text>
+                    <Text style={styles.summaryPrice}>€{subtotal}</Text>
                 </View>
                 <View style={styles.summaryLine}>
                     <Text style={styles.summaryText}>Shipping</Text>
@@ -75,43 +74,59 @@ const VehicleCart = ({ route, navigation }) => {
                 </View>
                 <View style={styles.totalLine}>
                     <Text style={styles.totalText}>Total</Text>
-                    <Text style={styles.totalPrice}>€{total.toFixed(2)}</Text>
+                    <Text style={styles.totalPrice}>€{total}</Text>
                 </View>
             </View>
         );
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <FlatList
-                data={cartItems}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <CartItem item={item} onDelete={handleDeleteItem} />
-                )}
-                ListEmptyComponent={
-                    <View style={styles.emptyContainer}>
-                        <Image source={emptyCartImage} style={styles.emptyImage} />
-                        <Text style={styles.emptyText}>Your cart is empty</Text>
-                    </View>
+        <>
+            <View style={styles.container}>
+                <AppHeader
+                    showBackButton={true}
+                    showText={true} // Display text alongside the back button
+                    title="My Cart"
+                    onBackButtonPress={() => navigation.goBack()}
+                />
+                <FlatList
+                    data={cartItems}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <CartItem item={item} onDelete={() => handleDeleteItem(item.id)} />
+                    )}
+                    ListEmptyComponent={
+                        <View style={styles.emptyContainer}>
+                            <Image source={emptyCartImage} style={styles.emptyImage} />
+                            <Text style={styles.emptyText}>Your cart is empty</Text>
+                        </View>
+                    }
+                    ListFooterComponent={renderFooter}
+                    contentContainerStyle={cartItems.length === 0 ? styles.emptyListContainer : styles.listContainer}
+                />
+
+                {
+                    cartItems.length > 0 && (
+                        <AppButton
+                            title="Checkout"
+                            onPress={() => setShowDateModal(true)}
+                            disabled={cartItems.length === 0} 
+                            buttonStyle={styles.checkoutButton}
+                            textStyle={styles.checkoutButtonText}
+                        />
+                    )
                 }
-                ListFooterComponent={renderFooter}
-                contentContainerStyle={cartItems.length === 0 ? styles.emptyListContainer : styles.listContainer}
-            />
-            <TouchableOpacity
-                style={[styles.checkoutButton, cartItems.length === 0 && styles.disabledCheckoutButton]}
-                disabled={cartItems.length === 0}
-                onPress={handlePayment} >
-                <Text style={styles.checkoutButtonText} >Checkout</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
+                <DateTimeScreen visible={showDateModal} price={total} onClose={() => setShowDateModal(false)} />
+            </View>
+            <Toast ref={(ref) => Toast.setRef(ref)} />
+        </>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        // backgroundColor: '#f5f5f5',
     },
     cartItem: {
         flexDirection: 'row',
@@ -127,6 +142,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 1,
         elevation: 3,
+        top: 20,
     },
     itemImageContainer: {
         borderColor: '#ddd',
@@ -152,10 +168,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
     },
-    // Footer styles
     footer: {
         paddingVertical: 10,
         paddingHorizontal: 16,
+        top: 20
     },
     summaryLine: {
         flexDirection: 'row',
@@ -196,32 +212,14 @@ const styles = StyleSheet.create({
         width: windowWidth * 0.7,
         height: windowWidth * 0.7,
         resizeMode: 'contain',
+        top: '50%'
     },
     emptyText: {
         fontSize: 20,
         color: '#aaa',
-        marginTop: 16,
-    },
-    checkoutButton: {
-        backgroundColor: '#4CAF50', // active button color
-        paddingVertical: 15,
-        paddingHorizontal: 25,
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 10,
-        marginHorizontal: 16,
-    },
-    disabledCheckoutButton: {
-        backgroundColor: '#ccc', // disabled button color
-    },
-    checkoutButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
+        top: '50%'
     },
     deleteButton: {
-        // Style for the delete button (e.g., padding, backgroundColor)
         padding: 8,
         backgroundColor: 'red',
         borderRadius: 5,

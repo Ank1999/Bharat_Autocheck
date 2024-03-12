@@ -16,7 +16,7 @@ const AppHeader = ({ title, showBackButton, showText, onBackButtonPress, onProfi
           {showText ? (
             <View style={styles.headerContent}>
               <TouchableOpacity style={styles.button} onPress={onBackButtonPress}>
-                <Icon name="chevron-left" size={30} color="black" />
+                <Icon name="chevron-left" size={30} color="white" />
               </TouchableOpacity>
               <View style={styles.nonClickableText}>
                 <Text style={styles.headerTitle}>{title}</Text>
@@ -42,22 +42,16 @@ const AppHeader = ({ title, showBackButton, showText, onBackButtonPress, onProfi
 };
 
 const styles = StyleSheet.create({
-  headerBar: {
-    position: 'absolute', // Positioning it absolutely
-    top: 40, // Align it to the top of the screen
-    left: 0, // Align it to the left of the screen
-    right: 0, // Stretch it to the right of the screen
+  headerBar: { 
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    height: 60,
+    height: 100,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F0F0F0',
-    // borderTopLeftRadius: 25,
-    // borderTopRightRadius: 25,
+    backgroundColor: '#4a6fa5',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -72,17 +66,15 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    top:20
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginRight: 10, // Add margin to the right of the title
+    color:'white'
   },
-  profileButton: {
-    // Styling for the profile button
-  },
+
   profileIcon: {
-    // fontSize:'40',
     color: 'black',
     margin: 10
   },
@@ -90,15 +82,15 @@ const styles = StyleSheet.create({
     opacity: 0.7, // Adjust the opacity to make it appear non-clickable
   },
   button: {
-    width: 45, // Adjust size as needed
-    height: 45, // Adjust size as needed
-    borderRadius: 10, // This should be half of the width to make it circular
+    width: 45, 
+    height: 45, 
+    borderRadius: 10, 
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1, // Adjust border width as needed
-    borderColor: 'black', // Adjust border color as needed
-    backgroundColor: 'transparent', 
-    right:12
+    borderWidth: 1, 
+    borderColor: 'white', 
+    backgroundColor: 'transparent',
+    right: 12
   }
 });
 

@@ -1,130 +1,266 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity, Text, Modal, KeyboardAvoidingView, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    View, StyleSheet, Text, TouchableOpacity, Modal, FlatList,
+    KeyboardAvoidingView, SafeAreaView, Platform, Image, TextInput
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-const LocationScreen = ({ visible, onClose, navigation }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+const LocationScreen = ({ visible, onClose }) => {
+    const [useCurrentLocation, setUseCurrentLocation] = useState(false);
+    const [useConfirmLocation, setUseConfirmLocation] = useState(false);
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [query, setQuery] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [isSearchInputFocused, setIsSearchInputFocused] = useState(false);
+    const [address, setAddress] = useState("Fetching address...");
+    const [isMapReady, setIsMapReady] = useState(false);
+
+    const mapRef = useRef(null);
 
     useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
+        if (useCurrentLocation && isMapReady) {
+            (async () => {
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    setErrorMsg('Permission to access location was denied');
+                    return;
+                }
+                let locationResult = await Location.getCurrentPositionAsync({});
+                const latitude = locationResult.coords.latitude;
+                const longitude = locationResult.coords.longitude;
 
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            });
-        })();
-    }, []);
+                await fetchAndSetAddress(latitude, longitude);
+                updateLocationAndAnimateMap(latitude, longitude);
 
-    const INDIA_REGION = {
-        latitude: 22.3511148,
-        longitude: 78.6677428,
-        latitudeDelta: 20,
-        longitudeDelta: 20,
-    };
+                setUseConfirmLocation(true);
+            })();
+        }
+    }, [useCurrentLocation, isMapReady]);
 
-    const handleSearch = async () => {
-        console.log('Search for:', searchQuery);
 
-        let results = await Location.geocodeAsync(searchQuery);
-        if (results.length > 0) {
-            let { latitude, longitude } = results[0];
-            setLocation({
-                latitude: latitude,
-                longitude: longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-            });
+    const updateLocationAndAnimateMap = (newLatitude, newLongitude, attempt = 1) => {
+        const newRegion = {
+            latitude: newLatitude,
+            longitude: newLongitude,
+            latitudeDelta: 0.0050,
+            longitudeDelta: 0.0050,
+        };
+
+        if (mapRef.current) {
+            console.log("Animating to region:", newRegion);
+            mapRef.current.animateToRegion(newRegion, 2000);
+        } else if (attempt <= 3) { // Retry up to 3 times
+            console.log("Map ref is not ready, retrying...");
+            setTimeout(() => updateLocationAndAnimateMap(newLatitude, newLongitude, attempt + 1), 500); // Retry after 500ms
+        } else {
+            console.log("Failed to animate to region after retries.");
         }
     };
 
-    const getCurrentLocation = async () => {
+
+
+    const handleSearch = async (text) => {
+        setQuery(text);
+        if (text.length > 3) {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${text}&countrycodes=in`);
+            const data = await response.json();
+            setSuggestions(data);
+        } else {
+            setSuggestions([]);
+        }
+    };
+    const handleSelectLocation = async (item) => {
+        const latitude = parseFloat(item.lat);
+        const longitude = parseFloat(item.lon);
+
+        // Ensure address fetching and state updates happen before map animation.
+        await fetchAndSetAddress(latitude, longitude);
+
+        // This ensures we're attempting to animate after we have the address and the map should be ready.
+        if (isMapReady) {
+            updateLocationAndAnimateMap(latitude, longitude);
+        } else {
+            console.log('Map is not ready when trying to animate to search result.');
+        }
+
+        setUseConfirmLocation(true);
+        setSuggestions([]);
+        setQuery('');
+        setIsSearchInputFocused(false);
+    };
+
+
+
+    const getCurrentLocation = () => {
+        setUseCurrentLocation(true);
+    };
+
+    const selectConfirmLocation = () => {
+        console.log('Location confirmed:', location);
+        onClose(); // Close the modal or navigate as needed
+    };
+
+    const renderItem = ({ item }) => (
+        <TouchableOpacity style={styles.itemContainer} onPress={() => handleSelectLocation(item)}>
+            <Text style={styles.itemText}>{item.display_name}</Text>
+        </TouchableOpacity>
+    );
+
+    const clearSearch = () => {
+        setQuery('');
+        setSuggestions([]);
+        setIsSearchInputFocused(false);
+    };
+
+    const handleRegionChangeComplete = (region) => {
+        const newLocation = {
+            latitude: region.latitude,
+            longitude: region.longitude,
+            latitudeDelta: region.latitudeDelta,
+            longitudeDelta: region.longitudeDelta,
+        };
+        setLocation(newLocation); // Update location state if needed for other purposes
+        fetchAndSetAddress(region.latitude, region.longitude); // Fetch new address
+    };
+    const reverseGeocodeLocation = async (latitude, longitude) => {
         try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.error) {
+                console.log('Error fetching address:', data.error);
+                return "Address not found";
             }
-
-            let location = await Location.getCurrentPositionAsync({
-                accuracy: Location.Accuracy.BestForNavigation,
-            });
-            setLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-            });
+            const address = data.display_name;
+            return address;
         } catch (error) {
-            // Handle or log error
-            console.error(error);
-            setErrorMsg(error.message);
+            console.error('Error reverse geocoding:', error);
+            return "Error fetching address";
         }
     };
 
-    let text = 'Waiting..';
-    if (errorMsg) {
-        text = errorMsg;
-    } else if (location) {
-        text = JSON.stringify(location);
-    }
 
+    const fetchAndSetAddress = async (latitude, longitude) => {
+        console.log(`Fetching address for ${latitude}, ${longitude}`);
+        const fetchedAddress = await reverseGeocodeLocation(latitude, longitude);
+        console.log("..........", fetchedAddress)
+        setAddress(fetchedAddress);
+    };
 
-    return (
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={onClose}
-        >
-            <KeyboardAvoidingView behavior="padding" style={styles.container}>
-                <SafeAreaView style={styles.safeArea}>
+    const renderContent = () => {
+        if (useConfirmLocation || useCurrentLocation) {
+            const headerTitle = useCurrentLocation ? 'Set Delivery Location' : 'Confirm Location';
+            const confirmButtonText = useCurrentLocation ? 'Set Location' : 'Confirm Location';
+
+            return (
+                <View style={styles.mapContainer}>
+                    <SafeAreaView style={styles.safeArea}>
+                        <View style={styles.header}>
+                            <TouchableOpacity style={styles.headerIcon} onPress={() => {
+                                setUseConfirmLocation(false);
+                                setUseCurrentLocation(false);
+                            }}>
+                                <Ionicons name="arrow-back" size={24} color="black" />
+                            </TouchableOpacity>
+                            <Text style={styles.headerTitle1}>{headerTitle}</Text>
+                        </View>
+
+                        <MapView
+                            ref={mapRef}
+                            style={styles.map}
+                            showsUserLocation={true}
+                            onMapReady={() => setIsMapReady(true)}
+                            onRegionChangeComplete={handleRegionChangeComplete}
+                        >
+                        </MapView>
+                        <View style={styles.markerFixed}>
+                            <Image style={styles.markerIcon} source={require('../../assets/marker.png')} />
+                            {/* <Text style={styles.deliveryMessage}>Your order will be delivered here</Text> */}
+                        </View>
+                    </SafeAreaView>
+
+                    <View style={styles.footer}>
+                        <View style={styles.addressContainer}>
+                            <View style={styles.addressSubContainer}>
+                                <View>
+                                    <Text style={styles.addressTitleText}>Location</Text>
+                                    <Text style={styles.addressSubTitleText}>{address}</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => {
+                                    setUseConfirmLocation(false);
+                                    setUseCurrentLocation(false);
+                                }} style={styles.changeButton}>
+                                    <Text style={styles.buttonText}>Change</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <TouchableOpacity onPress={selectConfirmLocation} style={styles.setLocationButton}>
+                                <Text style={styles.buttonText1}>{confirmButtonText}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+
+            );
+        } else {
+            // Default search screen
+            return (
+                <View>
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={onClose}>
+                        <TouchableOpacity style={styles.headerIcon} onPress={onClose}>
                             <Ionicons name="arrow-back" size={24} color="black" />
                         </TouchableOpacity>
-                        <Text style={styles.headerTitle}>Set delivery location</Text>
                     </View>
                     <View style={styles.searchSection}>
+                        <Text style={styles.searchTitle}>Search for your location</Text>
                         <View style={styles.searchBarContainer}>
+                            <Ionicons name="ios-search" size={20} color="#a3a3a3" style={styles.searchIcon} />
                             <TextInput
                                 style={styles.searchBar}
                                 placeholder="Address search e.g. Nilgiri's HSR"
-                                onChangeText={setSearchQuery}
-                                value={searchQuery}
+                                onChangeText={handleSearch}
+                                value={query} // Use 'query' here
+                                onFocus={() => setIsSearchInputFocused(true)}
+                                onBlur={() => setIsSearchInputFocused(false)}
                             />
-                            <Ionicons name="ios-search" size={20} color="#a3a3a3" style={styles.searchIcon} />
+                            {query.length > 0 && (
+                                <TouchableOpacity onPress={clearSearch}>
+                                    <MaterialIcons name="cancel" size={18} color="#a3a3a3" style={styles.searchIcon} />
+                                </TouchableOpacity>
+                            )}
                         </View>
-                        <View style={styles.dividerContainer}>
-                            <View style={styles.line} />
-                            <Text style={styles.orText}>OR</Text>
-                            <View style={styles.line} />
-                        </View>
-                        <TouchableOpacity onPress={getCurrentLocation} style={styles.currentLocationContainer}>
-                            <Ionicons name="ios-locate" size={24} color="#4CAF50" style={styles.locationIcon} />
-                            <Text style={styles.currentLocationText}>Use current location</Text>
-                        </TouchableOpacity>
                     </View>
-                    <View style={styles.mapContainer}>
-                        <MapView
-                            style={styles.map}
-                            initialRegion={INDIA_REGION}
-                            region={location}
-                        >
-                            {location && <Marker coordinate={location} />}
-                        </MapView>
-                    </View>
+                    <FlatList
+                        data={suggestions}
+                        keyExtractor={(item) => item.place_id.toString()}
+                        renderItem={renderItem}
+                        style={styles.flatList}
+                    />
+                    {!isSearchInputFocused && query.length === 0 && (
+                        <>
+                            <View style={styles.dividerContainer}>
+                                <View style={styles.line} />
+                                <Text style={styles.orText}>OR</Text>
+                                <View style={styles.line} />
+                            </View>
+                            <TouchableOpacity onPress={getCurrentLocation} style={styles.currentLocationContainer}>
+                                <Ionicons name="ios-locate" size={24} color="#4CAF50" style={styles.locationIcon} />
+                                <Text style={styles.currentLocationText}>Use current location</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
+                </View>
+            );
+        }
+    };
+
+    return (
+        <Modal visible={visible} transparent={true} animationType="slide" onRequestClose={onClose}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+                <SafeAreaView style={styles.safeArea}>
+                    {renderContent()}
                 </SafeAreaView>
             </KeyboardAvoidingView>
         </Modal>
@@ -138,7 +274,7 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         flex: 1,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
     },
     header: {
         flexDirection: 'row',
@@ -147,17 +283,28 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderBottomWidth: 1,
         borderBottomColor: '#e2e2e2',
-        backgroundColor: 'white'
     },
-    headerTitle: {
+    headerIcon: {
+        marginRight: 10,
+    },
+    headerTitle1: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginLeft: 24
+        // marginBottom:10
+    },
+    serachText: {
+        fontSize: 16,
+        marginBottom: 10
     },
     searchSection: {
         backgroundColor: 'white',
         paddingHorizontal: 16,
         paddingTop: 16,
+    },
+    searchTitle: {
+        fontSize: 17,
+        fontWeight: '500',
+        marginBottom: 10
     },
     searchBarContainer: {
         flexDirection: 'row',
@@ -177,6 +324,9 @@ const styles = StyleSheet.create({
     },
     searchIcon: {
         marginLeft: 8,
+    },
+    clearButton: {
+        padding: 10,
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -207,15 +357,85 @@ const styles = StyleSheet.create({
     },
     mapContainer: {
         flex: 1,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
     },
     map: {
-        height: 200,
-        borderRadius: 8,
-        // marginHorizontal: 16,
-        marginBottom: 16,
+        flex: 1,
+        width: '100%',
     },
+    markerFixed: {
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: [{ translateX: -24 }, { translateY: -48 }], // Adjust based on the size of your marker image
+        width: 48, // Adjust based on your marker size
+        height: 48, // Adjust based on your marker size
+    },
+    markerIcon: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
+    },
+    deliveryMessage: {
+        color: 'black',
+    },
+    addressContainer: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        padding: 20,
+        backgroundColor: 'white',
+    },
+    addressSubContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    addressTitleText: {
+        fontWeight: 'bold',
+    },
+    addressSubTitleText: {
+        fontSize: 12,
+    },
+    changeButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#4CAF50', // Green color to match the 'Set location' button
+    },
+    setLocationButton: {
+        backgroundColor: '#5CB85C',
+        padding: 10,
+        borderRadius: 20,
+        marginTop: 10,
+        height: 45,
+        alignItems: 'center',
+        top: 15
+    },
+    buttonText: {
+        color: '#5CB85C',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    buttonText1: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+
+    },
+    flatList: {
+        maxHeight: 200, // Adjust based on your UI needs
+    },
+    itemContainer: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    itemText: {
+        fontSize: 16,
+    },
+    // Add other styles you might need
 });
 
 export default LocationScreen;

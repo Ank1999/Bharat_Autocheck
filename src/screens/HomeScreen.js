@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Card, Text, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -7,6 +7,7 @@ import { useCart } from '../Global/CartContext';
 import { v4 as uuidv4 } from 'uuid';
 import Toast from 'react-native-toast-message';
 import SummaryBar from '../Global/SummaryBar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -14,6 +15,7 @@ const HomeScreen = ({ navigation }) => {
 
     const [isLocationModalVisible, setLocationModalVisible] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [savedAddress, setSavedAddress] = useState('');
     const numberOfSlides = 2;
     const { addToCart } = useCart();
 
@@ -22,6 +24,33 @@ const HomeScreen = ({ navigation }) => {
         const currentIndex = Math.round(contentOffsetX / Dimensions.get('window').width);
         setCurrentIndex(currentIndex);
     };
+
+    useEffect(() => {
+        const loadSavedAddresses = async () => {
+            try {
+                const savedAddressesString = await AsyncStorage.getItem('savedAddresses');
+                const savedAddresses = savedAddressesString ? JSON.parse(savedAddressesString) : [];
+                setSavedAddress(savedAddresses);
+            } catch (error) {
+                console.error('Failed to load saved addresses:', error);
+            }
+        };
+
+        loadSavedAddresses();
+    }, []);
+
+    const handleSaveAddress = async (updatedAddresses) => {
+        setSavedAddress(updatedAddresses); // Assuming updatedAddresses is an array
+        console.log('Fetched saved addresses:', savedAddresses);
+
+        // Save the updated array to AsyncStorage
+        try {
+            await AsyncStorage.setItem('savedAddresses', JSON.stringify(updatedAddresses));
+        } catch (error) {
+            console.error('Failed to save addresses:', error);
+        }
+    };
+
 
     const openSearch = () => {
         // Logic to navigate to the SearchScreen
@@ -89,14 +118,31 @@ const HomeScreen = ({ navigation }) => {
                         style={styles.logo}
                         resizeMode="contain"
                     />
-                    <View style={{flexDirection:'row'}}>
-                        <Text style={{right:40,textAlign:'center',alignSelf:'center',color:'white'}}>address..</Text>
-                        <TouchableOpacity style={{right:10}} onPress={() => setLocationModalVisible(true)}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text
+                            style={{
+                                right: 80,
+                                textAlign: 'center',
+                                alignSelf: 'center',
+                                color: 'white',
+                                width: 100, // Fixed width
+                                overflow: 'hidden', // This is redundant in React Native but kept for clarity
+                            }}
+                            numberOfLines={1} // Ensures that text does not wrap and uses ellipsis
+                        >
+                            {Array.isArray(savedAddress) && savedAddress.map((address, index) => (
+                                <Text key={index}>{address}</Text>
+                            ))}
+                        </Text>
+                        <TouchableOpacity style={{ right: 60 }} onPress={() => setLocationModalVisible(true)}>
                             <Icon name="location-sharp" size={24} color="#fff" />
                         </TouchableOpacity>
+
                         <LocationScreen
                             visible={isLocationModalVisible}
                             onClose={() => setLocationModalVisible(false)}
+                            onSaveAddress={handleSaveAddress} // Passing the function here
+                            savedAddress={savedAddress}
                         />
                     </View>
 

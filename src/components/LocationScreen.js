@@ -5,12 +5,14 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const LocationScreen = ({ visible, onClose }) => {
+
+const LocationScreen = ({ visible, onClose, onSaveAddress, savedAddress }) => {
     const [useCurrentLocation, setUseCurrentLocation] = useState(false);
     const [useConfirmLocation, setUseConfirmLocation] = useState(false);
-    const [location, setLocation] = useState(null);
+    // const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -18,8 +20,45 @@ const LocationScreen = ({ visible, onClose }) => {
     const [address, setAddress] = useState("Fetching address...");
     const [isMapReady, setIsMapReady] = useState(false);
     const [showAddressDetails, setShowAddressDetails] = useState(false);
+    const [location, setLocation] = useState({
+        latitude: 37.78825, // Default latitude
+        longitude: -122.4324, // Default longitude
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
+    const [localSavedAddresses, setLocalSavedAddresses] = useState([]);
+
 
     const mapRef = useRef(null);
+
+    useEffect(() => {
+        if (visible) {
+            // Reset the states to ensure the default screen is shown
+            setShowAddressDetails(false);
+            setUseCurrentLocation(false);
+            setUseConfirmLocation(false);
+        }
+    }, [visible]);
+
+    useEffect(() => {
+        // If savedAddress is a string, convert it to an array; otherwise, use it directly if it's already an array
+        const addresses = Array.isArray(savedAddress) ? savedAddress : [savedAddress].filter(Boolean);
+        setLocalSavedAddresses(addresses);
+    }, [savedAddress])
+
+    useEffect(() => {
+        const loadSavedAddresses = async () => {
+            try {
+                const savedAddressesString = await AsyncStorage.getItem('savedAddresses');
+                const savedAddresses = savedAddressesString ? JSON.parse(savedAddressesString) : [];
+                setLocalSavedAddresses(savedAddresses);
+            } catch (error) {
+                console.error('Failed to load saved addresses:', error);
+            }
+        };
+
+        loadSavedAddresses();
+    }, []);
 
     useEffect(() => {
         if (useCurrentLocation && isMapReady) {
@@ -109,21 +148,21 @@ const LocationScreen = ({ visible, onClose }) => {
         const latitude = parseFloat(item.lat);
         const longitude = parseFloat(item.lon);
 
-        // Ensure address fetching and state updates happen before map animation.
-        await fetchAndSetAddress(latitude, longitude);
-        setLocation({ latitude, longitude });
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+            await fetchAndSetAddress(latitude, longitude);
+            setLocation({ latitude, longitude, latitudeDelta: 0.0050, longitudeDelta: 0.0050 });
 
-        // This ensures we're attempting to animate after we have the address and the map should be ready.
-        if (isMapReady) {
-            updateLocationAndAnimateMap(latitude, longitude);
-        } else {
-            console.log('Map is not ready when trying to animate to search result.');
+            if (isMapReady) {
+                updateLocationAndAnimateMap(latitude, longitude);
+            } else {
+                console.log('Map is not ready when trying to animate to search result.');
+            }
+
+            setUseConfirmLocation(true);
+            setSuggestions([]);
+            setQuery('');
+            setIsSearchInputFocused(false);
         }
-
-        setUseConfirmLocation(true);
-        setSuggestions([]);
-        setQuery('');
-        setIsSearchInputFocused(false);
     };
 
 
@@ -158,6 +197,7 @@ const LocationScreen = ({ visible, onClose }) => {
         setLocation(newLocation); // Update location state if needed for other purposes
         fetchAndSetAddress(region.latitude, region.longitude); // Fetch new address
     };
+
     const reverseGeocodeLocation = async (latitude, longitude) => {
         try {
             const boundingBox = '68.1766451354,6.7549280873,97.4025614766,35.4940095078';
@@ -185,21 +225,60 @@ const LocationScreen = ({ visible, onClose }) => {
         setAddress(fetchedAddress);
     };
 
-    const handleSaveAddress = () => {
-        console.log('Address details saved.');
-        // You would handle the saving of the address details here
-        // and then navigate to the next step or close the modal
+    const handleSaveAddress = async () => {
+        // Assuming 'address' contains the new address to be added
+        if (!localSavedAddresses.includes(address)) {
+            const updatedAddresses = [...localSavedAddresses, address];
+            // Save the updated addresses to AsyncStorage
+            try {
+                // Reverse the updatedAddresses array before saving to AsyncStorage
+                const reversedAddresses = updatedAddresses.slice().reverse();
+                await AsyncStorage.setItem('savedAddresses', JSON.stringify(reversedAddresses));
+                setLocalSavedAddresses(reversedAddresses); // Update local state with new addresses
+                console.log('Saved addresses to AsyncStorage:', reversedAddresses);
+                onSaveAddress(reversedAddresses); // Ensure this prop is correctly passed from HomeScreen
+            } catch (error) {
+                console.error('Failed to save addresses:', error);
+            }
+        }
+
+        onClose(); // Close the modal or location screen
     };
+
+    const handleDeleteAddress = async (index) => {
+        const updatedAddresses = localSavedAddresses.filter((_, i) => i !== index);
+        setLocalSavedAddresses(updatedAddresses); // Update local state with the updated addresses
+
+        // Save the updated addresses to AsyncStorage
+        try {
+            await AsyncStorage.setItem('savedAddresses', JSON.stringify(updatedAddresses));
+            onSaveAddress(updatedAddresses); // Ensure this prop is correctly passed from HomeScreen
+        } catch (error) {
+            console.error('Failed to delete address:', error);
+        }
+    };
+
 
     const goBackToMap = () => {
         setShowAddressDetails(false);
         // If needed, add logic to determine whether to go back to confirm or current location screen
     };
 
+    const handleSelectAddress = (address) => {
+        console.log("Selected address:", address);
+        // Perform actions with the selected address
+        // For example, update the current location or close the modal
+    };
+
 
     const renderConfirmView = () => {
         const headerTitle = useCurrentLocation ? 'Set Delivery Location' : 'Confirm Location';
         const confirmButtonText = useCurrentLocation ? 'Set Location' : 'Confirm Location';
+
+        if (!location) {
+            // You can either return null or some loading indicator
+            return <Text>Loading map...</Text>;
+        }
 
         return (
             <View style={styles.mapContainer}>
@@ -369,6 +448,23 @@ const LocationScreen = ({ visible, onClose }) => {
                             <Ionicons name="ios-locate" size={24} color="#4CAF50" style={styles.locationIcon} />
                             <Text style={styles.currentLocationText}>Use current location</Text>
                         </TouchableOpacity>
+                        {savedAddress && (
+                            <ScrollView style={styles.savedAddressesContainer}>
+                                {localSavedAddresses.map((address, index) => (
+                                    <View key={index} style={styles.savedAddressItemContainer}>
+                                        <TouchableOpacity style={styles.savedAddressItem} onPress={() => handleSelectAddress(address)}>
+                                            <Text style={styles.savedAddressText}>
+                                                {address}
+                                            </Text>
+                                        <TouchableOpacity onPress={() => handleDeleteAddress(index)} style={styles.deleteButton}>
+                                            <MaterialIcons name="delete" size={24} color='red' style={styles.deleteButtonText} />
+                                        </TouchableOpacity>
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                        )}
+
                     </>
                 )}
             </View>
@@ -556,7 +652,7 @@ const styles = StyleSheet.create({
     },
     flatList: {
         maxHeight: 600,
-        padding:10 // Adjust based on your UI needs
+        padding: 10 // Adjust based on your UI needs
     },
     itemContainer: {
         padding: 10,
@@ -622,8 +718,47 @@ const styles = StyleSheet.create({
     footer: {
         borderTopWidth: 0.2,
         borderBottomColor: '#eee',
-        paddingVertical:15,
-    }
+        paddingVertical: 15,
+    },
+    savedAddressesContainer: {
+        marginTop: 20,
+        paddingHorizontal: 20,
+    },
+    savedAddressItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 5,
+    },
+    savedAddressItem: {
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        flexDirection: 'row',
+        alignSelf:'center',
+        justifyContent:'center',
+        width:'97%',
+    },
+    savedAddressText: {
+        fontSize: 16,
+        color: '#333333',
+    },
+    deleteButton: {
+        // backgroundColor: 'red',
+        padding: 5,
+        borderRadius: 5,
+    },
+    deleteButtonText: {
+        color: 'red',
+        fontWeight: 'bold',
+    },
+
 });
 
 export default LocationScreen;

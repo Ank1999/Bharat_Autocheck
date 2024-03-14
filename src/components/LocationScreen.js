@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, Modal, FlatList,
-    KeyboardAvoidingView, SafeAreaView, Platform, Image, TextInput
+    KeyboardAvoidingView, SafeAreaView, Platform, Image, TextInput, ScrollView
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -17,6 +17,7 @@ const LocationScreen = ({ visible, onClose }) => {
     const [isSearchInputFocused, setIsSearchInputFocused] = useState(false);
     const [address, setAddress] = useState("Fetching address...");
     const [isMapReady, setIsMapReady] = useState(false);
+    const [showAddressDetails, setShowAddressDetails] = useState(false);
 
     const mapRef = useRef(null);
 
@@ -60,24 +61,57 @@ const LocationScreen = ({ visible, onClose }) => {
         }
     };
 
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const toRadians = (angle) => {
+            return angle * (Math.PI / 180);
+        };
 
+        const earthRadius = 6371; // Radius of the Earth in kilometers
+
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        const distance = earthRadius * c; // Distance in kilometers
+
+        return distance;
+    };
 
     const handleSearch = async (text) => {
         setQuery(text);
         if (text.length > 3) {
             const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${text}&countrycodes=in`);
             const data = await response.json();
-            setSuggestions(data);
+
+            // Calculate distance from user's location for each suggestion
+            const suggestionsWithDistance = data.map(item => {
+                const suggestionLatitude = parseFloat(item.lat);
+                const suggestionLongitude = parseFloat(item.lon);
+                const distance = calculateDistance(location.latitude, location.longitude, suggestionLatitude, suggestionLongitude);
+                return { ...item, distance };
+            });
+
+            // Sort suggestions based on distance
+            const sortedSuggestions = suggestionsWithDistance.sort((a, b) => a.distance - b.distance);
+
+            setSuggestions(sortedSuggestions);
         } else {
             setSuggestions([]);
         }
     };
+
     const handleSelectLocation = async (item) => {
         const latitude = parseFloat(item.lat);
         const longitude = parseFloat(item.lon);
 
         // Ensure address fetching and state updates happen before map animation.
         await fetchAndSetAddress(latitude, longitude);
+        setLocation({ latitude, longitude });
 
         // This ensures we're attempting to animate after we have the address and the map should be ready.
         if (isMapReady) {
@@ -99,8 +133,7 @@ const LocationScreen = ({ visible, onClose }) => {
     };
 
     const selectConfirmLocation = () => {
-        console.log('Location confirmed:', location);
-        onClose(); // Close the modal or navigate as needed
+        setShowAddressDetails(true);
     };
 
     const renderItem = ({ item }) => (
@@ -127,7 +160,9 @@ const LocationScreen = ({ visible, onClose }) => {
     };
     const reverseGeocodeLocation = async (latitude, longitude) => {
         try {
-            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+            const boundingBox = '68.1766451354,6.7549280873,97.4025614766,35.4940095078';
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&bounded=1&viewbox=${boundingBox}&countrycodes=in`;
+
             const response = await fetch(url);
             const data = await response.json();
             if (data.error) {
@@ -150,109 +185,203 @@ const LocationScreen = ({ visible, onClose }) => {
         setAddress(fetchedAddress);
     };
 
-    const renderContent = () => {
-        if (useConfirmLocation || useCurrentLocation) {
-            const headerTitle = useCurrentLocation ? 'Set Delivery Location' : 'Confirm Location';
-            const confirmButtonText = useCurrentLocation ? 'Set Location' : 'Confirm Location';
+    const handleSaveAddress = () => {
+        console.log('Address details saved.');
+        // You would handle the saving of the address details here
+        // and then navigate to the next step or close the modal
+    };
 
-            return (
-                <View style={styles.mapContainer}>
-                    <SafeAreaView style={styles.safeArea}>
-                        <View style={styles.header}>
-                            <TouchableOpacity style={styles.headerIcon} onPress={() => {
-                                setUseConfirmLocation(false);
-                                setUseCurrentLocation(false);
-                            }}>
-                                <Ionicons name="arrow-back" size={24} color="black" />
-                            </TouchableOpacity>
-                            <Text style={styles.headerTitle1}>{headerTitle}</Text>
-                        </View>
+    const goBackToMap = () => {
+        setShowAddressDetails(false);
+        // If needed, add logic to determine whether to go back to confirm or current location screen
+    };
 
-                        <MapView
-                            ref={mapRef}
-                            style={styles.map}
-                            showsUserLocation={true}
-                            onMapReady={() => setIsMapReady(true)}
-                            onRegionChangeComplete={handleRegionChangeComplete}
-                        >
-                        </MapView>
-                        <View style={styles.markerFixed}>
-                            <Image style={styles.markerIcon} source={require('../../assets/marker.png')} />
-                            {/* <Text style={styles.deliveryMessage}>Your order will be delivered here</Text> */}
-                        </View>
-                    </SafeAreaView>
 
-                    <View style={styles.footer}>
-                        <View style={styles.addressContainer}>
-                            <View style={styles.addressSubContainer}>
-                                <View>
-                                    <Text style={styles.addressTitleText}>Location</Text>
-                                    <Text style={styles.addressSubTitleText}>{address}</Text>
-                                </View>
-                                <TouchableOpacity onPress={() => {
-                                    setUseConfirmLocation(false);
-                                    setUseCurrentLocation(false);
-                                }} style={styles.changeButton}>
-                                    <Text style={styles.buttonText}>Change</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <TouchableOpacity onPress={selectConfirmLocation} style={styles.setLocationButton}>
-                                <Text style={styles.buttonText1}>{confirmButtonText}</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
+    const renderConfirmView = () => {
+        const headerTitle = useCurrentLocation ? 'Set Delivery Location' : 'Confirm Location';
+        const confirmButtonText = useCurrentLocation ? 'Set Location' : 'Confirm Location';
 
-            );
-        } else {
-            // Default search screen
-            return (
-                <View>
+        return (
+            <View style={styles.mapContainer}>
+                <SafeAreaView style={styles.safeArea}>
                     <View style={styles.header}>
-                        <TouchableOpacity style={styles.headerIcon} onPress={onClose}>
+                        <TouchableOpacity style={styles.headerIcon} onPress={() => {
+                            setUseConfirmLocation(false);
+                            setUseCurrentLocation(false);
+                        }}>
                             <Ionicons name="arrow-back" size={24} color="black" />
                         </TouchableOpacity>
+                        <Text style={styles.headerTitle1}>{headerTitle}</Text>
                     </View>
-                    <View style={styles.searchSection}>
-                        <Text style={styles.searchTitle}>Search for your location</Text>
-                        <View style={styles.searchBarContainer}>
-                            <Ionicons name="ios-search" size={20} color="#a3a3a3" style={styles.searchIcon} />
-                            <TextInput
-                                style={styles.searchBar}
-                                placeholder="Address search e.g. Nilgiri's HSR"
-                                onChangeText={handleSearch}
-                                value={query} // Use 'query' here
-                                onFocus={() => setIsSearchInputFocused(true)}
-                                onBlur={() => setIsSearchInputFocused(false)}
-                            />
-                            {query.length > 0 && (
-                                <TouchableOpacity onPress={clearSearch}>
-                                    <MaterialIcons name="cancel" size={18} color="#a3a3a3" style={styles.searchIcon} />
-                                </TouchableOpacity>
-                            )}
-                        </View>
+
+                    <MapView
+                        ref={mapRef}
+                        style={styles.map}
+                        showsUserLocation={true}
+                        initialRegion={{
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                            latitudeDelta: 0.0050,
+                            longitudeDelta: 0.0050,
+                        }}
+
+                        onMapReady={() => setIsMapReady(true)}
+                        onRegionChangeComplete={handleRegionChangeComplete}
+                    >
+                    </MapView>
+                    <View style={styles.markerFixed}>
+                        <Image style={styles.markerIcon} source={require('../../assets/marker.png')} />
+                        {/* <Text style={styles.deliveryMessage}>Your order will be delivered here</Text> */}
                     </View>
-                    <FlatList
-                        data={suggestions}
-                        keyExtractor={(item) => item.place_id.toString()}
-                        renderItem={renderItem}
-                        style={styles.flatList}
-                    />
-                    {!isSearchInputFocused && query.length === 0 && (
-                        <>
-                            <View style={styles.dividerContainer}>
-                                <View style={styles.line} />
-                                <Text style={styles.orText}>OR</Text>
-                                <View style={styles.line} />
+                </SafeAreaView>
+
+                <View >
+                    <View style={styles.addressContainer}>
+                        <View style={styles.addressSubContainer}>
+                            <View>
+                                <Text style={styles.addressTitleText}>Location</Text>
+                                <Text style={styles.addressSubTitleText}>{address}</Text>
                             </View>
-                            <TouchableOpacity onPress={getCurrentLocation} style={styles.currentLocationContainer}>
-                                <Ionicons name="ios-locate" size={24} color="#4CAF50" style={styles.locationIcon} />
-                                <Text style={styles.currentLocationText}>Use current location</Text>
+                            <TouchableOpacity onPress={() => {
+                                setUseConfirmLocation(false);
+                                setUseCurrentLocation(false);
+                            }} style={styles.changeButton}>
+                                <Text style={styles.buttonText}>Change</Text>
                             </TouchableOpacity>
-                        </>
-                    )}
+                        </View>
+                        <TouchableOpacity onPress={selectConfirmLocation} style={styles.setLocationButton}>
+                            <Text style={styles.buttonText1}>{confirmButtonText}</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            );
+            </View>
+
+        );
+    };
+
+    const renderAddressDetailsView = () => {
+        return (
+            <View>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.headerIcon} onPress={goBackToMap}>
+                        <Ionicons name="arrow-back" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle1}>Add address Details</Text>
+                </View>
+                <ScrollView style={styles.addressDetailsContainer}>
+                    <MapView
+                        style={styles.mapSmall}
+                        initialRegion={{
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                            latitudeDelta: 0.0030,
+                            longitudeDelta: 0.0030,
+                        }}
+                        scrollEnabled={false}
+                        pitchEnabled={false}
+                        rotateEnabled={false}
+                        zoomEnabled={false}
+                    >
+                        <Marker
+                            coordinate={{
+                                latitude: location.latitude,
+                                longitude: location.longitude,
+                            }}
+                        />
+                    </MapView>
+                    <View style={styles.locationContainer}>
+                        <Text style={styles.locationHeader}>{address}</Text>
+                        <TouchableOpacity onPress={goBackToMap} style={styles.changeButtonSmall}>
+                            <Text style={styles.buttonText}>Change</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="House / Flat number"
+                    // Add onChangeText and other props as needed
+                    />
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Apartment / Building name"
+                    // Add onChangeText and other props as needed
+                    />
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="contact number"
+                    // Add onChangeText and other props as needed
+                    />
+
+
+                </ScrollView>
+                <View style={styles.footer}>
+                    {/* <View style={styles.addressContainer}> */}
+
+                    <TouchableOpacity onPress={handleSaveAddress} style={styles.saveButton}>
+                        <Text style={styles.saveButtonText}>Add address</Text>
+                    </TouchableOpacity>
+                    {/* </View> */}
+                </View>
+            </View>
+        );
+    };
+
+    const renderDefaultSearchView = () => {
+        return (
+            <View>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.headerIcon} onPress={onClose}>
+                        <Ionicons name="arrow-back" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.searchSection}>
+                    <Text style={styles.searchTitle}>Search for your location</Text>
+                    <View style={styles.searchBarContainer}>
+                        <Ionicons name="ios-search" size={20} color="#a3a3a3" style={styles.searchIcon} />
+                        <TextInput
+                            style={styles.searchBar}
+                            placeholder="Address search e.g. Nilgiri's HSR"
+                            onChangeText={handleSearch}
+                            value={query} // Use 'query' here
+                            onFocus={() => setIsSearchInputFocused(true)}
+                            onBlur={() => setIsSearchInputFocused(false)}
+                        />
+                        {query.length > 0 && (
+                            <TouchableOpacity onPress={clearSearch}>
+                                <MaterialIcons name="cancel" size={18} color="#a3a3a3" style={styles.searchIcon} />
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </View>
+                <FlatList
+                    data={suggestions}
+                    keyExtractor={(item) => item.place_id.toString()}
+                    renderItem={renderItem}
+                    style={styles.flatList}
+                />
+                {!isSearchInputFocused && query.length === 0 && (
+                    <>
+                        <View style={styles.dividerContainer}>
+                            <View style={styles.line} />
+                            <Text style={styles.orText}>OR</Text>
+                            <View style={styles.line} />
+                        </View>
+                        <TouchableOpacity onPress={getCurrentLocation} style={styles.currentLocationContainer}>
+                            <Ionicons name="ios-locate" size={24} color="#4CAF50" style={styles.locationIcon} />
+                            <Text style={styles.currentLocationText}>Use current location</Text>
+                        </TouchableOpacity>
+                    </>
+                )}
+            </View>
+        );
+    };
+
+    const renderContent = () => {
+        if (showAddressDetails) {
+            return renderAddressDetailsView();
+        } else if (useConfirmLocation || useCurrentLocation) {
+            return renderConfirmView();
+        } else {
+            return renderDefaultSearchView();
         }
     };
 
@@ -402,7 +531,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: '#fff',
         borderWidth: 1,
-        borderColor: '#4CAF50', // Green color to match the 'Set location' button
+        borderColor: '#4CAF50',
+
     },
     setLocationButton: {
         backgroundColor: '#5CB85C',
@@ -425,7 +555,8 @@ const styles = StyleSheet.create({
 
     },
     flatList: {
-        maxHeight: 200, // Adjust based on your UI needs
+        maxHeight: 600,
+        padding:10 // Adjust based on your UI needs
     },
     itemContainer: {
         padding: 10,
@@ -435,7 +566,64 @@ const styles = StyleSheet.create({
     itemText: {
         fontSize: 16,
     },
-    // Add other styles you might need
+    addressDetailsContainer: {
+        // flex: 1,
+        backgroundColor: 'white',
+    },
+    mapSmall: {
+        width: '100%',
+        height: 300, // Set the height of the small map
+    },
+    locationContainer: {
+        flexDirection: 'row',
+        alignContent: 'center',
+        alignItems: 'center'
+    },
+    locationHeader: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        padding: 15,
+        width: '75%'
+    },
+    inputField: {
+        borderWidth: 1,
+        borderColor: '#e2e2e2',
+        padding: 15,
+        margin: 15,
+        borderRadius: 5,
+    },
+    saveButton: {
+        backgroundColor: '#5CB85C',
+        padding: 15,
+        margin: 15,
+        borderRadius: 25,
+    },
+    saveButtonText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    changeButtonSmall: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#4CAF50',
+        textAlign: 'center',
+        justifyContent: 'center',
+
+    },
+    buttonText: {
+        fontWeight: 'bold',
+        color: '#5CB85C',
+    },
+    footer: {
+        borderTopWidth: 0.2,
+        borderBottomColor: '#eee',
+        paddingVertical:15,
+    }
 });
 
 export default LocationScreen;

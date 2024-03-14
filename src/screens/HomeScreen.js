@@ -89,13 +89,17 @@ const HomeScreen = ({ navigation }) => {
                         style={styles.logo}
                         resizeMode="contain"
                     />
-                    <TouchableOpacity onPress={() => setLocationModalVisible(true)}>
-                        <Icon name="location-sharp" size={24} color="#fff" />
-                    </TouchableOpacity>
-                    <LocationScreen
-                        visible={isLocationModalVisible}
-                        onClose={() => setLocationModalVisible(false)}
-                    />
+                    <View style={{flexDirection:'row'}}>
+                        <Text style={{right:40,textAlign:'center',alignSelf:'center',color:'white'}}>address..</Text>
+                        <TouchableOpacity style={{right:10}} onPress={() => setLocationModalVisible(true)}>
+                            <Icon name="location-sharp" size={24} color="#fff" />
+                        </TouchableOpacity>
+                        <LocationScreen
+                            visible={isLocationModalVisible}
+                            onClose={() => setLocationModalVisible(false)}
+                        />
+                    </View>
+
                 </View>
 
                 {/* Search Bar */}
